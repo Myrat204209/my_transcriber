@@ -1,24 +1,19 @@
-import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:my_transcriber/app/app.dart';
+import 'package:my_transcriber/bootstrap/bootstrap.dart';
+
+import 'package:hive_ce_flutter/hive_flutter.dart' show Hive, HiveX;
 
 void main() {
-  runApp(const MainApp());
-}
+  bootstrap(() async {
+    // const permissionClient = PermissionClient();
+    // await permissionClient.init();
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+    await Hive.initFlutter();
+    // Hive.registerAdapters();
 
-  @override
-  Widget build(BuildContext context) {
-    return ShadcnApp(
-      theme: ThemeData(
-        colorScheme: ColorSchemes.darkZinc(),
-        radius: 0.5,
-      ),
-      home: Scaffold(
-        child: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+    // final userReportsBox =
+    //     await Hive.openBox<List<dynamic>>(HiveBoxKeys.userReportsBoxKey);
+
+    return App();
+  });
 }
