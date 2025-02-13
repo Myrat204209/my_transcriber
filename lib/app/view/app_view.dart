@@ -1,8 +1,7 @@
 import 'dart:developer';
 
-import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:my_transcriber/questions/questions.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart'; // Ensure BootstrapIcons is imported
+import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class AppView extends StatefulWidget {
   const AppView({super.key});
@@ -37,34 +36,29 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
               colorScheme: ColorSchemes.darkGreen(),
               radius: 0.5,
             ),
-            home: OutlinedContainer(
-              width: 500,
-              height: 400,
-              child: Scaffold(
-                footers: [
-                  const Divider(),
-                  NavigationBar(
-                    onSelected: (i) {
-                      setState(() {
-                        selected = i;
-                      });
-                      log('Selected: $i  $selected');
-                    },
-                    index: selected,
-                    alignment: alignment,
-                    labelType: labelType,
-                    expands: expands,
-                    children: [
-                      buildButton('Home', BootstrapIcons.house),
-                      buildButton('Explore', BootstrapIcons.compass),
-                      buildButton('Library', BootstrapIcons.musicNoteList),
-                    ],
-                  ),
-                ],
-                child: Center(
-                  child: QuestionsPage(),
+            home: Scaffold(
+              backgroundColor: Colors.cyan,
+              footers: [
+                const Divider(),
+                NavigationBar(
+                  onSelected: (i) {
+                    setState(() {
+                      selected = i;
+                    });
+                    log('Selected: $i  $selected');
+                  },
+                  index: selected,
+                  alignment: alignment,
+                  labelType: labelType,
+                  expands: expands,
+                  children: [
+                    buildButton('Home', BootstrapIcons.house),
+                    buildButton('Explore', BootstrapIcons.compass),
+                    buildButton('Library', BootstrapIcons.musicNoteList),
+                  ],
                 ),
-              ),
+              ],
+              child: QuestionsPage(),
             ),
           );
         },
