@@ -15,7 +15,11 @@ class AppBlocObserver extends BlocObserver {
   //     log('onChange(${bloc.runtimeType}, $change) took ${stopwatch.elapsedMilliseconds}ms\n');
   //   }
   // }
-
+@override
+  void onEvent(Bloc bloc, Object? event) {
+    log('onEvent(${bloc.runtimeType}, $event) ');
+    super.onEvent(bloc, event);
+  }
   @override
   void onTransition(
     Bloc<dynamic, dynamic> bloc,

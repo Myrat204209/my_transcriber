@@ -12,22 +12,31 @@ final class QuestionsRequested extends QuestionsEvent {
   const QuestionsRequested();
 }
 
-final class QuestionsRefreshRequested extends QuestionsEvent {}
+final class QuestionsRefreshRequested extends QuestionsEvent {
+  const QuestionsRefreshRequested();
+}
 
-final class QuestionsAdded extends QuestionsEvent {
-  final List<String> questions;
+final class QuestionAdded extends QuestionsEvent {
+  final String question;
 
-  const QuestionsAdded(this.questions);
+  const QuestionAdded(this.question);
 }
 
 final class QuestionUpdated extends QuestionsEvent {
   final int questionIndex;
+  final String newQuestion;
 
-  const QuestionUpdated(this.questionIndex);
+  const QuestionUpdated(this.questionIndex, this.newQuestion);
 }
 
 final class QuestionDeleted extends QuestionsEvent {
   final int questionIndex;
 
   const QuestionDeleted(this.questionIndex);
+}
+
+final class QuestionsReordered extends QuestionsEvent {
+  final List<String> newOrder;
+
+  const QuestionsReordered(this.newOrder);
 }

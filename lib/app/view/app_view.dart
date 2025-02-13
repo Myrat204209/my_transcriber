@@ -58,7 +58,14 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
                   ],
                 ),
               ],
-              child: QuestionsPage(),
+              child: IndexedStack(
+                index: selected,
+                children: const [
+                  QuestionsPage(),
+                  Center(child: Text('Explore')),
+                  Center(child: Text('Library')),
+                ],
+              ),
             ),
           );
         },
