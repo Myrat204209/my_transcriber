@@ -2,14 +2,16 @@ import 'package:my_transcriber/app/app.dart';
 import 'package:my_transcriber/bootstrap/bootstrap.dart';
 
 import 'package:hive_ce_flutter/hive_flutter.dart' show Hive, HiveX;
+import 'package:my_transcriber/permissions/permissions.dart';
 
 import 'package:my_transcriber/questions/questions.dart';
 
 void main() {
   bootstrap(() async {
     const permissionClient = PermissionClient();
-    await permissionClient.init();
-    final storageRepository = StorageRepository(permissionClient: permissionClient);
+    StorageRepository(permissionClient: permissionClient).init();
+
+    MicrophoneRepository(permissionClient: permissionClient).init();
 
     await Hive.initFlutter();
 
@@ -19,7 +21,7 @@ void main() {
       questionBoxClient: questionsBoxClient,
     );
     return App(
-      storageRepository: storageRepository,
+      // storageRepository: storageRepository,
       questionsRepository: questionsRepository,
     );
   });

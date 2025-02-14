@@ -1,1 +1,1 @@
-// TODO Implement this library.
+export 'chat_page.dart';

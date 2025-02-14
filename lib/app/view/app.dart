@@ -7,12 +7,15 @@ import 'app_view.dart';
 
 class App extends StatelessWidget {
   const App(
-      {required StorageRepository storageRepository,
+      {
+        // required StorageRepository storageRepository,
       required QuestionsRepository questionsRepository,
       super.key})
-      : _storageRepository = storageRepository,
+      :
+      //  _storageRepository = storageRepository,
         _questionsRepository = questionsRepository;
-  final StorageRepository _storageRepository;
+  // final StorageRepository _storageRepository;
+
   final QuestionsRepository _questionsRepository;
 
   @override
@@ -24,7 +27,7 @@ class App extends StatelessWidget {
 
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider.value(value: _storageRepository),
+        // RepositoryProvider.value(value: _storageRepository),
         RepositoryProvider.value(value: _questionsRepository),
       ],
       child: MultiBlocProvider(

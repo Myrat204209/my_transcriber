@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/questions/questions.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -10,7 +11,7 @@ class AppView extends StatefulWidget {
   State<AppView> createState() => _AppViewState();
 }
 
-class _AppViewState extends State<AppView> with WidgetsBindingObserver {
+class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     int selected = 0;
@@ -62,7 +63,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
                 index: selected,
                 children: const [
                   QuestionsPage(),
-                  Center(child: Text('Explore')),
+                  ChatPage(),
                   Center(child: Text('Library')),
                 ],
               ),

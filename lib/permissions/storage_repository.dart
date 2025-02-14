@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
+import 'package:my_transcriber/permissions/permissions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart'; // For accessing the file system
 
-part 'questions_storage.dart'; 
-part 'permission_client.dart';
-
-/// {@template storage_failure}
-/// A base failure for the storage repository failures.
-/// {@endtemplate}
-abstract class StorageFailure with EquatableMixin implements Exception {
+sealed class StorageFailure with EquatableMixin implements Exception {
   const StorageFailure(this.error);
 
   final Object error;
@@ -19,55 +14,35 @@ abstract class StorageFailure with EquatableMixin implements Exception {
   List<Object> get props => [error];
 }
 
-/// {@template initialize_storage_failure}
-/// Thrown when initializing storage preferences fails.
-/// {@endtemplate}
-class InitializeStorageFailure extends StorageFailure {
-  const InitializeStorageFailure(super.error);
-}
-
-/// {@template write_to_storage_failure}
-/// Thrown when writing to storage fails.
-/// {@endtemplate}
-class WriteToStorageFailure extends StorageFailure {
+final class WriteToStorageFailure extends StorageFailure {
   const WriteToStorageFailure(super.error);
 }
 
-/// {@template read_from_storage_failure}
-/// Thrown when reading from storage fails.
-/// {@endtemplate}
-class ReadFromStorageFailure extends StorageFailure {
+final class ReadFromStorageFailure extends StorageFailure {
   const ReadFromStorageFailure(super.error);
 }
 
-/// {@template storage_repository}
-/// A repository that manages file operations (read/write) to external storage.
-/// It requests permission to access the external 
-/// storage before performing the operations.
-/// {@endtemplate}
 class StorageRepository {
   StorageRepository({
     required PermissionClient permissionClient,
   }) : _permissionClient = permissionClient;
 
   final PermissionClient _permissionClient;
-  // final ReportsStorage _storage;
+  Future<void> init() async => await requestPermission();
 
-  /// Request permission to read and write from external storage.
   Future<void> requestPermission() async {
-    // Check Android version to request the correct permission
     if (Platform.isAndroid) {
       if (await _isAndroid10OrAbove()) {
-        // For Android 10 and above, request "MANAGE_EXTERNAL_STORAGE"
-        final status =
-            await _permissionClient.requestManageExternalStoragePermission();
+        final status = await _permissionClient
+            .requestPermission(Permission.manageExternalStorage);
         if (!status.isGranted) {
           throw Exception(
             'Storage permission (MANAGE_EXTERNAL_STORAGE) denied',
           );
         }
       } else {
-        final status = await _permissionClient.requestStoragePermissions();
+        final status =
+            await _permissionClient.requestPermission(Permission.storage);
         if (!status.isGranted) {
           throw Exception('Storage permission denied');
         }
@@ -111,6 +86,16 @@ class StorageRepository {
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ReadFromStorageFailure(error), stackTrace);
     }
+  }
+
+  /// Request access to storage permissions (for Android < 10),
+  /// if access hasn't been previously granted.
+  Future<PermissionStatus> requestFromSettings(Permission permission) async {
+    final storageStatus = await permission.request();
+    if (storageStatus.isDenied || storageStatus.isPermanentlyDenied) {
+      await openAppSettings();
+    }
+    return storageStatus;
   }
 
   /// Get the directory where files are stored on external storage.
