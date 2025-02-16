@@ -13,8 +13,9 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   @override
+  int selected = 0;
+  @override
   Widget build(BuildContext context) {
-    int selected = 0;
     NavigationBarAlignment alignment = NavigationBarAlignment.spaceAround;
     bool expands = true;
     NavigationLabelType labelType = NavigationLabelType.none;
