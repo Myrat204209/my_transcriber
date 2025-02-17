@@ -29,6 +29,9 @@ class QuestionAddButton extends StatelessWidget {
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 400),
                     child: TextField(
+                      autofocus: true,
+                      enabled: true,
+                      border: true,
                       controller: controller,
                     ).withPadding(vertical: 16),
                   ),

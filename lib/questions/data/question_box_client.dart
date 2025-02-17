@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 class QuestionBoxClient {
@@ -32,9 +34,11 @@ class QuestionBoxClient {
 
   // Reorder questions by clearing the box and reinserting them in the new order.
   Future<void> reOrder(List<String> newOrder) async {
+    log('Before Refresh happened  ${_questionBox.values}');
     await _questionBox.clear();
     for (var question in newOrder) {
       await _questionBox.add(question);
     }
+    log('Refresh happened  ${_questionBox.values}');
   }
 }

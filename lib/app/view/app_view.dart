@@ -12,7 +12,6 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-  @override
   int selected = 0;
   @override
   Widget build(BuildContext context) {

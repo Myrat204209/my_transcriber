@@ -12,12 +12,16 @@ dependencies:
     sdk: flutter
   flutter_beep_plus: ^0.0.3
   flutter_bloc: ^9.0.0
+  flutter_tts: ^4.2.2
   go_router: ^14.8.0
   hive_ce_flutter: ^2.2.0
   hydrated_bloc: ^10.0.0
+  logger: ^2.5.0
+  path: ^1.9.1
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
   shadcn_flutter: ^0.0.24
+  speech_to_text: ^7.0.0
   whisper_library_dart: ^0.0.5
   whisper_library_flutter: ^0.0.5
 
@@ -75,3 +79,5 @@ flutter:
     - family: BootstrapIcons
       fonts:
         - asset: packages/shadcn_flutter/icons/BootstrapIcons.otf
+  assets:
+    - shorebird.yaml

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../data/question_box_client.dart';
+import 'package:my_transcriber/questions/questions.dart';
 
 /// A base failure for the questions repository failures
 abstract class QuestionsFailure with EquatableMixin implements Exception {
