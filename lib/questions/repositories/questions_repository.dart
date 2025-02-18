@@ -1,11 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:my_transcriber/questions/questions.dart';
 
-/// A base failure for the questions repository failures
 abstract class QuestionsFailure with EquatableMixin implements Exception {
   const QuestionsFailure(this.error);
 
-  /// The error which was caught.
   final Object error;
 
   @override
@@ -33,13 +31,11 @@ class ReorderQuestionsFailure extends QuestionsFailure {
 }
 
 class QuestionsRepository {
-  const QuestionsRepository({
-    required QuestionBoxClient questionBoxClient,
-  }) : _questionBoxClient = questionBoxClient;
+  const QuestionsRepository({required QuestionBoxClient questionBoxClient})
+    : _questionBoxClient = questionBoxClient;
 
   final QuestionBoxClient _questionBoxClient;
 
-  /// Method to fetch all questions
   Future<List<String>> fetchQuestions() async {
     try {
       return _questionBoxClient.fetchAll();
@@ -48,7 +44,6 @@ class QuestionsRepository {
     }
   }
 
-  /// Method to add a new question
   Future<int> addQuestion(String question) async {
     try {
       return await _questionBoxClient.addOne(question);
@@ -57,7 +52,6 @@ class QuestionsRepository {
     }
   }
 
-  /// Method to edit an existing question
   Future<void> editQuestion(int index, String newQuestion) async {
     try {
       await _questionBoxClient.editOne(index, newQuestion);
@@ -66,7 +60,6 @@ class QuestionsRepository {
     }
   }
 
-  /// Method to delete a question
   Future<void> deleteQuestion(int index) async {
     try {
       await _questionBoxClient.deleteOne(index);
@@ -75,10 +68,9 @@ class QuestionsRepository {
     }
   }
 
-  /// Method to reorder questions
-  Future<void> reorderQuestions(List<String> newOrder) async {
+  Future<void> reorderQuestions({required oldIndex, required newIndex}) async {
     try {
-      await _questionBoxClient.reOrder(newOrder);
+      await _questionBoxClient.reOrder(oldIndex: oldIndex, newIndex: newIndex);
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ReorderQuestionsFailure(error), stackTrace);
     }

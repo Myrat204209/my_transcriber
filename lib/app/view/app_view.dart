@@ -54,7 +54,7 @@ class _AppViewState extends State<AppView> {
                   expands: expands,
                   children: [
                     buildButton('Home', BootstrapIcons.house),
-                    buildButton('Explore', BootstrapIcons.compass),
+                    buildButton('Explore', BootstrapIcons.mic),
                     buildButton('Library', BootstrapIcons.musicNoteList),
                   ],
                 ),

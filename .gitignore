@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+# Additional Flutter/Dart related ignore patterns
+.packages
+android/local.properties
 
 # Symbolication related
 app.*.symbols

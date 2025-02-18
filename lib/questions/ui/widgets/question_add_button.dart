@@ -7,8 +7,8 @@ class QuestionAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentQuestions =
-        context.select((QuestionsBloc bloc) => bloc.state.questions);
+    // final currentQuestions =
+    //     context.select((QuestionsBloc bloc) => bloc.state.questions);
     return PrimaryButton(
       size: ButtonSize.normal,
       shape: ButtonShape.circle,

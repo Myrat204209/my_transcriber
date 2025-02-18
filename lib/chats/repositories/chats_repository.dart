@@ -33,9 +33,8 @@ class ShutdownFailure extends ChatFailure {
 }
 
 class ChatRepository {
-  ChatRepository({
-    required ChatService chatService,
-  }) : _chatService = chatService;
+  ChatRepository({required ChatService chatService})
+    : _chatService = chatService;
 
   final ChatService _chatService;
 
@@ -55,10 +54,13 @@ class ChatRepository {
 
   /// Initializes speech recognition and listens to user speech for the given duration.
   /// Returns the recognized text and logs it.
-  Future<String> listenUserSpeech(
-      {Duration listenDuration = const Duration(seconds: 5)}) async {
+  Future<String> listenUserSpeech({
+    Duration listenDuration = const Duration(seconds: 5),
+  }) async {
     try {
-      final String recognizedText = await _chatService.listenUserSpeech(listenDuration: listenDuration);
+      final String recognizedText = await _chatService.listenUserSpeech(
+        listenDuration: listenDuration,
+      );
       _conversationLog.add("User: $recognizedText");
       return recognizedText;
     } catch (error, stackTrace) {
@@ -80,7 +82,7 @@ class ChatRepository {
   /// Combines the conversation log into a single text and exports it as a DOCX file at [filePath].
   Future<void> exportConversation(String filePath) async {
     try {
-      final String conversationText = _conversationLog.join("\n");
+      // final String conversationText = _conversationLog.join("\n");
       // await _chatService.exportConversation(conversationText, filePath);
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ExportConversationFailure(error), stackTrace);

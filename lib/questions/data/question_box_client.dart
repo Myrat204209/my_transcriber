@@ -1,44 +1,48 @@
-import 'dart:developer';
-
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:my_transcriber/questions/questions.dart';
 
 class QuestionBoxClient {
   final Box<String> _questionBox;
 
   QuestionBoxClient({required Box<String> questionBox})
-      : _questionBox = questionBox;
+    : _questionBox = questionBox;
 
-  // Fetch all questions from the box.
-  List<String> fetchAll() {
-    return _questionBox.values.toList();
-  }
+  List<String> fetchAll() => [..._questionBox.values];
 
-  // Add a new question to the box. Returns the index of the added question.
   Future<int> addOne(String question) async {
-    if (_questionBox.values.contains(question)) {
-      return -1;
-    } else {
-      return await _questionBox.add(question);
+    if (question.isEmpty) {
+      throw ArgumentError('Question cannot be empty');
     }
+    return _questionBox.values.contains(question)
+        ? -1
+        : await _questionBox.add(question);
   }
 
-  // Edit an existing question at the given index.
   Future<void> editOne(int index, String newQuestion) async {
+    _validateIndex(index);
     await _questionBox.putAt(index, newQuestion);
   }
 
-  // Delete a question at the given index.
   Future<void> deleteOne(int index) async {
+    _validateIndex(index);
     await _questionBox.deleteAt(index);
   }
 
-  // Reorder questions by clearing the box and reinserting them in the new order.
-  Future<void> reOrder(List<String> newOrder) async {
-    log('Before Refresh happened  ${_questionBox.values}');
-    await _questionBox.clear();
-    for (var question in newOrder) {
-      await _questionBox.add(question);
+  Future<void> reOrder({required int oldIndex, required int newIndex}) async {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
     }
-    log('Refresh happened  ${_questionBox.values}');
+    logger.d('Before swap: ${_questionBox.values}');
+    final item = _questionBox.getAt(oldIndex)!;
+    await _questionBox.deleteAt(oldIndex);
+    await _questionBox.putAt(newIndex, item);
+
+    logger.i('After swap: ${_questionBox.values}');
+  }
+
+  void _validateIndex(int index) {
+    if (index < 0 || index >= _questionBox.length) {
+      throw RangeError.range(index, 0, _questionBox.length - 1, 'index');
+    }
   }
 }

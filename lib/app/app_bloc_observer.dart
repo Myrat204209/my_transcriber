@@ -1,6 +1,8 @@
-import 'dart:developer' show log;
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart' show GetIt;
+import 'package:logger/logger.dart' show Logger;
+
+final _logger = GetIt.I<Logger>();
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -15,23 +17,24 @@ class AppBlocObserver extends BlocObserver {
   //     log('onChange(${bloc.runtimeType}, $change) took ${stopwatch.elapsedMilliseconds}ms\n');
   //   }
   // }
-@override
+  @override
   void onEvent(Bloc bloc, Object? event) {
-    log('onEvent(${bloc.runtimeType}, $event) ');
+    _logger.t('onEvent(${bloc.runtimeType}, $event) ');
     super.onEvent(bloc, event);
   }
+
   @override
   void onTransition(
     Bloc<dynamic, dynamic> bloc,
     Transition<dynamic, dynamic> transition,
   ) {
     super.onTransition(bloc, transition);
-    log('onTransition(${bloc.runtimeType}, $transition) ');
+    _logger.i('onTransition(${bloc.runtimeType}, $transition) ');
   }
 
   @override
   void onError(BlocBase<dynamic> bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    log('onError(${bloc.runtimeType}, $error, $stackTrace)\n');
+    _logger.e('onError(${bloc.runtimeType}, $error, $stackTrace)\n');
   }
 }

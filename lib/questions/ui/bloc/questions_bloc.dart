@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -10,41 +9,35 @@ part 'questions_state.dart';
 
 class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
   QuestionsBloc({required this.questionsRepository})
-      : super(const QuestionsState.initial()) {
+    : super(const QuestionsState.initial()) {
+    on<QuestionsInitialized>(_onInit);
     on<QuestionsRequested>(_onRequested);
-    // on<QuestionsRefreshRequested>(_onRefresh);
     on<QuestionAdded>(_onAdded);
     on<QuestionUpdated>(_onUpdated);
     on<QuestionDeleted>(_onDeleted);
     on<QuestionsReordered>(_onReordered);
-    on<QuestionsRefreshRequested>(_onRefresh);
   }
 
   final QuestionsRepository questionsRepository;
 
-  FutureOr<void> _onRequested(
+  void _onInit(QuestionsInitialized event, Emitter<QuestionsState> emit) {
+    emit(state.copyWith(status: QuestionsStatus.initial));
+    add(const QuestionsRequested());
+  }
+
+  Future<void> _onRequested(
     QuestionsRequested event,
     Emitter<QuestionsState> emit,
   ) async {
     emit(state.copyWith(status: QuestionsStatus.loading));
     try {
       final questions = await questionsRepository.fetchQuestions();
-      emit(state.copyWith(
-        status: QuestionsStatus.success,
-        questions: questions,
-      ));
+      emit(
+        state.copyWith(status: QuestionsStatus.success, questions: questions),
+      );
     } catch (error, stackTrace) {
-      emit(state.copyWith(status: QuestionsStatus.failure));
-      addError(error, stackTrace);
+      _handleError(emit, error, stackTrace);
     }
-  }
-
-  void _onRefresh(
-    QuestionsRefreshRequested event,
-    Emitter<QuestionsState> emit,
-  ) {
-    emit(state.copyWith(status: QuestionsStatus.refreshing));
-    add(const QuestionsRequested());
   }
 
   Future<void> _onAdded(
@@ -53,33 +46,59 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
   ) async {
     try {
       await questionsRepository.addQuestion(event.question);
-      add(const QuestionsRefreshRequested());
+      logger.f(event.question);
+      emit(state.copyWith(status: QuestionsStatus.updating));
+      emit(
+        state.copyWith(
+          questions: [...state.questions, event.question],
+          status: QuestionsStatus.success,
+        ),
+      );
     } catch (error, stackTrace) {
-      emit(state.copyWith(status: QuestionsStatus.failure));
-      addError(error, stackTrace);
+      _handleError(emit, error, stackTrace);
     }
   }
 
   Future<void> _onUpdated(
-      QuestionUpdated event, Emitter<QuestionsState> emit) async {
+    QuestionUpdated event,
+    Emitter<QuestionsState> emit,
+  ) async {
     try {
       await questionsRepository.editQuestion(
-          event.questionIndex, event.newQuestion);
-      add(const QuestionsRefreshRequested());
+        event.questionIndex,
+        event.newQuestion,
+      );
+      final updatedQuestions = [...state.questions];
+      updatedQuestions[event.questionIndex] = event.newQuestion;
+      emit(state.copyWith(status: QuestionsStatus.updating));
+      emit(
+        state.copyWith(
+          questions: updatedQuestions,
+          status: QuestionsStatus.success,
+        ),
+      );
     } catch (error, stackTrace) {
-      emit(state.copyWith(status: QuestionsStatus.failure));
-      addError(error, stackTrace);
+      _handleError(emit, error, stackTrace);
     }
   }
 
   Future<void> _onDeleted(
-      QuestionDeleted event, Emitter<QuestionsState> emit) async {
+    QuestionDeleted event,
+    Emitter<QuestionsState> emit,
+  ) async {
     try {
       await questionsRepository.deleteQuestion(event.questionIndex);
-      add(const QuestionsRefreshRequested());
+      final updatedQuestions = [...state.questions]
+        ..removeAt(event.questionIndex);
+        emit(state.copyWith(status: QuestionsStatus.updating));
+      emit(
+        state.copyWith(
+          questions: updatedQuestions,
+          status: QuestionsStatus.success,
+        ),
+      );
     } catch (error, stackTrace) {
-      emit(state.copyWith(status: QuestionsStatus.failure));
-      addError(error, stackTrace);
+      _handleError(emit, error, stackTrace);
     }
   }
 
@@ -88,16 +107,25 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     Emitter<QuestionsState> emit,
   ) async {
     try {
-      log('Reordering questions ${state.questions} to ${event.newOrder}');
-      await questionsRepository.reorderQuestions(event.newOrder);
-      // Directly emit new state with the new order:
-      // emit(state.copyWith(
-      //   questions: event.newOrder,
-      //   status: QuestionsStatus.success,
-      // ));
+      await questionsRepository.reorderQuestions(
+        oldIndex: event.oldIndex,
+        newIndex: event.newIndex,
+      );
+      // emit(state.copyWith(questions: event.newOrder, status: QuestionsStatus.success));
+      //TODO:  add unComment QuestionRequested method
+      // add(QuestionsRequested());
     } catch (error, stackTrace) {
-      emit(state.copyWith(status: QuestionsStatus.failure));
-      addError(error, stackTrace);
+      _handleError(emit, error, stackTrace);
     }
+  }
+
+  void _handleError(
+    Emitter<QuestionsState> emit,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    emit(state.copyWith(status: QuestionsStatus.failure));
+    logger.f('Fatal Error', error: error, stackTrace: stackTrace);
+    addError(error, stackTrace);
   }
 }

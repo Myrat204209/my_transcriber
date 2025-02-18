@@ -9,10 +9,8 @@ import 'package:my_transcriber/questions/questions.dart';
 
 void main() {
   bootstrap(() async {
-    const permissionClient = PermissionClient();
+    PermissionClient().init();
     // StorageRepository(permissionClient: permissionClient).init();
-
-    MicrophoneRepository(permissionClient: permissionClient).init();
 
     await Hive.initFlutter();
     if (Hive.isBoxOpen('__user_questions__')) {

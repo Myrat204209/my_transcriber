@@ -5,8 +5,9 @@ class ChatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final questionList =
+    final questionsList =
         context.select((QuestionsBloc bloc) => bloc.state.questions);
+    int indexQuestion = 0;
     return Scaffold(
       headers: [
         AppBar(
@@ -21,22 +22,30 @@ class ChatView extends StatelessWidget {
               Spacer(),
               // ChatInputBox()
               // ,
+              // if (state.status == ChatsStatus.started)
+              Card(
+                borderRadius: BorderRadius.circular(10),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Text("questionsList[indexQuestion++]").withPadding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
               // Flexible(
-              //   child: SizedBox(),
-              //   // child: ListView.separated(
-              //   //   itemCount: questionsList.length,
-              //   //   itemBuilder: (context, index) {
-              //   //     return DecoratedBox(
-              //   //       decoration: BoxDecoration(
-              //   //           color: Colors.blue,
-              //   //           borderRadius: BorderRadius.circular(10)),
-              //   //       child: Text(questionsList[index]).withPadding(
-              //   //           padding: EdgeInsets.symmetric(
-              //   //               vertical: 5, horizontal: 10)),
-              //   //     ).withPadding(padding: EdgeInsets.symmetric(vertical: 10));
-              //   //   },
-              //   //   separatorBuilder: (context, index) => const Divider(),
-              //   // ),
+
+              //   child: ListView.separated(
+              //     itemCount: 1,
+              //     itemBuilder: (context, index) {
+              //       return DecoratedBox(
+              //         decoration: BoxDecoration(
+              //             color: Colors.blue,
+              //             borderRadius: BorderRadius.circular(10)),
+              //         child: Text(questionsList[index]).withPadding(
+              //             padding: EdgeInsets.symmetric(
+              //                 vertical: 5, horizontal: 10)),
+              //       ).withPadding(padding: EdgeInsets.symmetric(vertical: 10));
+              //     },
+              //     separatorBuilder: (context, index) => const Divider(),
+              //   ),
               // ),
 
               material.Row(
@@ -60,7 +69,11 @@ class ChatView extends StatelessWidget {
                       size: 60,
                     ),
                     autofocus: true,
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<ChatsBloc>()
+                        ..add(ChatsStarted())
+                        ..add(ChatQuestioned(questionsList[indexQuestion]));
+                    },
                   ),
                   material.IconButton(
                     icon: Icon(

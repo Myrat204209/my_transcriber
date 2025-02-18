@@ -9,12 +9,14 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final ChatRepository chatRepository;
 
   ChatsBloc({required this.chatRepository}) : super(ChatsState.initial()) {
+   
     on<ChatsStarted>(_onChatsStarted);
     on<ChatQuestioned>(_onChatQuestioned);
     on<ChatBeeped>(_onChatBeeped);
     on<ChatListened>(_onChatListened);
     on<ChatFinished>(_onChatFinished);
   }
+
 
   Future<void> _onChatsStarted(
     ChatsStarted event,
@@ -25,7 +27,9 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(state.copyWith(status: ChatsStatus.started));
     } catch (e) {
       emit(state.copyWith(
-          status: ChatsStatus.error, errorMessage: e.toString()));
+        status: ChatsStatus.error,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
@@ -87,9 +91,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     Emitter<ChatsState> emit,
   ) async {
     try {
-      // Export the conversation log to a DOCX file. The file path can be parameterized.
       await chatRepository.exportConversation("conversation.docx");
-      // Shut down native tools (microphone, TTS engine, etc.).
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));
     } catch (e) {

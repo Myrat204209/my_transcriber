@@ -10,13 +10,11 @@ class QuestionsContent extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 40),
       child: BlocBuilder<QuestionsBloc, QuestionsState>(
-        // Optionally, consider a deep equality check if needed.
-        buildWhen: (previous, current) =>
-            previous.questions.length != current.questions.length ||
-            previous.questions != current.questions,
         builder: (context, state) {
           if (state.status == QuestionsStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
           } else if (state.status == QuestionsStatus.failure) {
             return const Center(child: Text('Failed to load questions'));
           } else if (state.status == QuestionsStatus.success &&
@@ -31,8 +29,10 @@ class QuestionsContent extends StatelessWidget {
               final question = state.questions[index];
               return Padding(
                 key: ValueKey(question),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -43,23 +43,24 @@ class QuestionsContent extends StatelessWidget {
                   leading: const Icon(Icons.drag_handle),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => context
-                        .read<QuestionsBloc>()
-                        .add(QuestionDeleted(index)),
+                    onPressed:
+                        () => context.read<QuestionsBloc>().add(
+                          QuestionDeleted(index),
+                        ),
                   ),
                 ),
               );
             },
             onReorder: (oldIndex, newIndex) {
-              final updatedQuestions = List<String>.from(state.questions);
-              if (oldIndex < newIndex) {
-                newIndex -= 1;
-              }
-              final String item = updatedQuestions.removeAt(oldIndex);
-              updatedQuestions.insert(newIndex, item);
-              context
-                  .read<QuestionsBloc>()
-                  .add(QuestionsReordered(updatedQuestions));
+              // final updatedQuestions = [...state.questions];
+              // if (oldIndex < newIndex) {
+              //   newIndex -= 1;
+              // }
+              // final String item = updatedQuestions.removeAt(oldIndex);
+              // updatedQuestions.insert(newIndex, item);
+              context.read<QuestionsBloc>().add(
+                QuestionsReordered(oldIndex: oldIndex, newIndex: newIndex),
+              );
             },
           );
         },
