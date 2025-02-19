@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'chats_bloc.dart';
 
 sealed class ChatsEvent extends Equatable {
@@ -8,25 +9,25 @@ sealed class ChatsEvent extends Equatable {
 }
 
 class ChatsStarted extends ChatsEvent {
-  const ChatsStarted();
+  final List<String> questionList;
+  const ChatsStarted({required this.questionList});
 }
 
 class ChatQuestioned extends ChatsEvent {
-  final String line;
-  const ChatQuestioned(this.line);
-
-  @override
-  List<Object?> get props => [line];
+  const ChatQuestioned();
 }
 
-class ChatBeeped extends ChatsEvent {}
+class ChatBeeped extends ChatsEvent {
+  const ChatBeeped();
+}
 
 class ChatListened extends ChatsEvent {
-  final String recognizedText;
-  const ChatListened(this.recognizedText);
+  // final String recognizedText;
+  // const ChatListened(this.recognizedText); 
+  const ChatListened();
 
-  @override
-  List<Object?> get props => [recognizedText];
+  // @override
+  // List<Object?> get props => [recognizedText];
 }
 
 class ChatFinished extends ChatsEvent {

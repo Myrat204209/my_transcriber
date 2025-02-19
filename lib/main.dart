@@ -9,7 +9,7 @@ import 'package:my_transcriber/questions/questions.dart';
 
 void main() {
   bootstrap(() async {
-    PermissionClient().init();
+    await PermissionClient().init();
     // StorageRepository(permissionClient: permissionClient).init();
 
     await Hive.initFlutter();

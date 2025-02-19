@@ -8,13 +8,9 @@ sealed class QuestionsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class QuestionsInitialized extends QuestionsEvent {
-  const QuestionsInitialized();
-}
-final class QuestionsRequested extends QuestionsEvent {
-  const QuestionsRequested();
-}
+final class QuestionsInitialized extends QuestionsEvent {}
 
+final class QuestionsRequested extends QuestionsEvent {}
 
 final class QuestionAdded extends QuestionsEvent {
   final String question;
@@ -36,7 +32,7 @@ final class QuestionDeleted extends QuestionsEvent {
 }
 
 final class QuestionsReordered extends QuestionsEvent {
-  final int oldIndex,newIndex;
+  final int oldIndex, newIndex;
 
-  const QuestionsReordered({required this.oldIndex,required this.newIndex});
+  const QuestionsReordered({required this.oldIndex, required this.newIndex});
 }

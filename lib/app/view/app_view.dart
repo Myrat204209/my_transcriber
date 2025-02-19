@@ -13,21 +13,30 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   int selected = 0;
+
+  NavigationBarAlignment alignment = NavigationBarAlignment.spaceAround;
+  bool expands = true;
+  NavigationLabelType labelType = NavigationLabelType.none;
+  bool customButtonStyle = true;
+  bool expanded = true;
+
+  NavigationItem buildButton(String label, IconData icon) {
+    return NavigationItem(
+      style:
+          customButtonStyle
+              ? const ButtonStyle.muted(density: ButtonDensity.icon)
+              : null,
+      selectedStyle:
+          customButtonStyle
+              ? const ButtonStyle.fixed(density: ButtonDensity.icon)
+              : null,
+      label: Text(label),
+      child: Icon(icon),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    NavigationBarAlignment alignment = NavigationBarAlignment.spaceAround;
-    bool expands = true;
-    NavigationLabelType labelType = NavigationLabelType.none;
-
-    NavigationButton buildButton(String label, IconData icon) {
-      return NavigationButton(
-        style: const ButtonStyle.muted(density: ButtonDensity.icon),
-        selectedStyle: const ButtonStyle.fixed(density: ButtonDensity.icon),
-        label: Text(label),
-        child: Icon(icon),
-      );
-    }
-
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -42,16 +51,17 @@ class _AppViewState extends State<AppView> {
               footers: [
                 const Divider(),
                 NavigationBar(
+                  alignment: alignment,
+                  labelType: labelType,
+                  expanded: expanded,
+                  expands: expands,
+                  index: selected,
                   onSelected: (i) {
                     setState(() {
                       selected = i;
                     });
                     log('Selected: $i  $selected');
                   },
-                  index: selected,
-                  alignment: alignment,
-                  labelType: labelType,
-                  expands: expands,
                   children: [
                     buildButton('Home', BootstrapIcons.house),
                     buildButton('Explore', BootstrapIcons.mic),

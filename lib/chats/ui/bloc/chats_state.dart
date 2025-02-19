@@ -1,56 +1,41 @@
 part of 'chats_bloc.dart';
 
 enum ChatsStatus {
-  initial, 
-  started, 
-  questioned, 
-  beeped, 
-  listening, 
-  finished, 
-  error, 
+  initial,
+  started,
+  questioning,
+  beeping,
+  listening,
+  finished,
+  failure,
 }
 
-class ChatsState extends Equatable {
+final class ChatsState extends Equatable {
   final ChatsStatus status;
-  final String? currentQuestion;
-  final String? recognizedText;
-  final String? errorMessage;
-  final bool speechEnabled;
+  final List<String> currentQuestion;
+  final List<String> recognizedText;
+
+  const ChatsState.initial() : this(status: ChatsStatus.initial);
 
   const ChatsState({
     required this.status,
-    this.currentQuestion,
-    this.recognizedText,
-    this.errorMessage,
-    this.speechEnabled = true,
+    this.currentQuestion = const [],
+    this.recognizedText = const [],
   });
 
   ChatsState copyWith({
     ChatsStatus? status,
-    String? currentQuestion,
-    String? recognizedText,
-    String? errorMessage,
+    List<String>? currentQuestion,
+    List<String>? recognizedText,
     bool? speechEnabled,
   }) {
     return ChatsState(
       status: status ?? this.status,
       currentQuestion: currentQuestion ?? this.currentQuestion,
       recognizedText: recognizedText ?? this.recognizedText,
-      errorMessage: errorMessage,
-      speechEnabled: speechEnabled ?? this.speechEnabled,
     );
   }
 
   @override
-  List<Object?> get props => [
-        status,
-        currentQuestion,
-        recognizedText,
-        errorMessage,
-        speechEnabled,
-      ];
-
-  factory ChatsState.initial() {
-    return const ChatsState(status: ChatsStatus.initial);
-  }
+  List<Object?> get props => [status, currentQuestion, recognizedText];
 }

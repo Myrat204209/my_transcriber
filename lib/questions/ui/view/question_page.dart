@@ -15,7 +15,7 @@ class QuestionsPage extends StatelessWidget {
         backgroundColor: Colors.green,
       ),
       body: QuestionView(),
-      floatingActionButton: const QuestionAddButton(),
+      floatingActionButton: const QuestionsAddButton(),
     );
   }
 }

@@ -1,50 +1,67 @@
 // import 'package:docx_template/docx_template.dart';
+import 'dart:developer';
+
+import 'package:flutter_beep_plus/flutter_beep_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:my_transcriber/questions/questions.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatService {
   final FlutterTts _flutterTts = FlutterTts();
-  final stt.SpeechToText _speechToText = stt.SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
+  final FlutterBeepPlus _flutterBeepPlus = FlutterBeepPlus();
 
-  final List<String> _conversationLog = [];
+  // final List<String> _conversationLog = [];
 
-  bool _isSpeechAvailable = false;
+  Future<void> initialize({String locale = 'ru'}) async {
+    // await _flutterTts.setLanguage('ru-RU');
+    await _flutterTts.setLanguage('ru-RU').onError( (error, stackTrace) => throw('TTS error: $error'));
+    log('Initialized TTS with locale: $locale');
 
-  Future<void> initialize({required String locale}) async {
-    await _flutterTts.setLanguage(locale);
-    _isSpeechAvailable = await _speechToText.initialize(
-      onStatus: (status) => print('Speech status: $status'),
-      onError: (error) => print('Speech error: $error'),
+    await _speechToText.initialize(
+      debugLogging: true,
+
+      onStatus: (status) => logger.t('Speech status: $status'),
+      onError: (error) => throw('Speech error: $error'),
     );
+    log('Initialized Speech to text with locale: $locale');
   }
 
   Future<void> speakText(String text) async {
-    _conversationLog.add("Bot: $text");
+    // _conversationLog.add("Bot: $text");
+    log('Speaker started speaking: $text');
     await _flutterTts.speak(text);
   }
 
-  Future<String> listenUserSpeech(
-      {Duration listenDuration = const Duration(seconds: 5)}) async {
+  Future<String> listenSpeech({
+    Duration listenDuration = const Duration(seconds: 5),
+  }) async {
     String recognizedText = "";
-    if (_isSpeechAvailable) {
-      await _speechToText.listen(
-        onResult: (result) {
-          recognizedText = result.recognizedWords;
-        },
-        listenFor: listenDuration,
-      );
-      await Future.delayed(listenDuration + const Duration(seconds: 1));
-      await _speechToText.stop();
-      _conversationLog.add("User: $recognizedText");
-    }
+
+    await _speechToText.listen(
+      onResult: (result) {
+        recognizedText = result.recognizedWords;
+      },
+      listenOptions: SpeechListenOptions(
+        autoPunctuation: true,
+        listenMode: ListenMode.deviceDefault,
+      ),
+      pauseFor: const Duration(seconds: 1),
+      listenFor: listenDuration,
+      localeId: 'ru_RU',
+    );
+    // _conversationLog.add("User: $recognizedText");
     return recognizedText;
   }
 
-  Future<String> conversationCycle(String textToSpeak) async {
-    await speakText(textToSpeak);
-    String userReply = await listenUserSpeech();
-    return userReply;
+  Future<void> beep() async {
+    await _flutterBeepPlus.playSysSound(AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP);
   }
+  // Future<String> conversationCycle(String textToSpeak) async {
+  //   await speakText(textToSpeak);
+  //   String userReply = await listenUserSpeech();
+  //   return userReply;
+  // }
 
   /// Exports the accumulated conversation log into a DOCX file at [filePath].
   /// This example uses a DOCX template file named "template.docx" from assets.

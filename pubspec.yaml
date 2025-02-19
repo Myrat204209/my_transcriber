@@ -10,20 +10,17 @@ dependencies:
   equatable: ^2.0.7
   flutter:
     sdk: flutter
-  get_it: ^7.7.0
+  get_it: ^8.0.3
   flutter_beep_plus: ^0.0.3
   flutter_bloc: ^9.0.0
   flutter_tts: ^4.2.2
   hive_ce_flutter: ^2.2.0
-  hydrated_bloc: ^10.0.0
   logger: ^2.5.0
   path: ^1.9.1
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
-  shadcn_flutter: ^0.0.24
+  shadcn_flutter: ^0.0.25
   speech_to_text: ^7.0.0
-  whisper_library_dart: ^0.0.5
-  whisper_library_flutter: ^0.0.5
 
 dev_dependencies:
   flutter_test:

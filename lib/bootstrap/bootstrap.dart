@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' show Bloc;
 import 'package:get_it/get_it.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:my_transcriber/app/app.dart';
-import 'package:path_provider/path_provider.dart';
 
 typedef AppBuilder = FutureOr<Widget> Function();
 Future<void> bootstrap(AppBuilder builder) async {
@@ -21,19 +19,6 @@ Future<void> bootstrap(AppBuilder builder) async {
 
       const blocObserver = AppBlocObserver();
       Bloc.observer = blocObserver;
-
-      HydratedBloc.storage = await HydratedStorage.build(
-        storageDirectory:
-            kIsWeb
-                ? HydratedStorageDirectory.web
-                : HydratedStorageDirectory(
-                  (await getApplicationDocumentsDirectory()).path,
-                ),
-      );
-      if (kDebugMode) {
-        await HydratedBloc.storage.clear();
-      }
-
       // await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
       // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 

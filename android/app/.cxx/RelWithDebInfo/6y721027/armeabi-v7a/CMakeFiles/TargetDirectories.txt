@@ -1,0 +1,2 @@
+C:/Users/Turing/My_Projects/projects/my_transcriber/android/app/.cxx/RelWithDebInfo/6y721027/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Turing/My_Projects/projects/my_transcriber/android/app/.cxx/RelWithDebInfo/6y721027/armeabi-v7a/CMakeFiles/rebuild_cache.dir

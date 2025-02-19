@@ -10,7 +10,7 @@ class PermissionClient {
     Permission.speech,
     Permission.storage,
     Permission.microphone,
-    Permission.manageExternalStorage,
+    // Permission.manageExternalStorage,
     Permission.audio,
   ];
 
@@ -21,10 +21,10 @@ class PermissionClient {
     try {
       Map<Permission, PermissionStatus> statuses = await _permissions.request();
 
-      if (await Permission.manageExternalStorage.status.isDenied) {
-        statuses[Permission.manageExternalStorage] =
-            await Permission.manageExternalStorage.request();
-      }
+      // if (await Permission.manageExternalStorage.status.isDenied) {
+      //   statuses[Permission.manageExternalStorage] =
+      //       await Permission.manageExternalStorage.request();
+      // }
 
       return statuses;
     } catch (e) {

@@ -26,7 +26,7 @@ class App extends StatelessWidget {
     // final themeModeBloc = ThemeModeBloc();
     final questionsBloc =
         QuestionsBloc(questionsRepository: _questionsRepository)
-          ..add(QuestionsRequested());
+          ..add(QuestionsInitialized());
     final chatsBloc = ChatsBloc(chatRepository: _chatRepository);
 
     return MultiRepositoryProvider(
