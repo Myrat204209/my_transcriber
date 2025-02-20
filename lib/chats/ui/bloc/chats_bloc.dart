@@ -48,12 +48,63 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         add(ChatFinished());
         return;
       }
-      await chatRepository.askQuestion(state.currentQuestion.first);
+
+      await _executeWithSafety(
+        action: () => chatRepository.askQuestion(state.currentQuestion.first),
+        cleanup: () => chatRepository.shutdown(),
+      );
+
       emit(state.copyWith(currentQuestion: state.currentQuestion.sublist(1)));
+      Future.delayed(const Duration(seconds: 5));
       add(ChatBeeped());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     }
+  }
+
+  Future<void> _executeWithSafety({
+    required Future<void> Function() action,
+    required Future<void> Function() cleanup,
+  }) async {
+    try {
+      await action();
+    } catch (e) {
+      await cleanup();
+      rethrow;
+    }
+  }
+
+  void _onChatListened(ChatListened event, Emitter<ChatsState> emit) async {
+    try {
+      emit(state.copyWith(status: ChatsStatus.listening));
+      final userAnswer = await chatRepository.listenAnswer();
+      emit(
+        state.copyWith(recognizedText: [...state.recognizedText, userAnswer]),
+      );
+      // await chatRepository.makeInterruption();
+      add(ChatQuestioned());
+    } catch (error, stackTrace) {
+      await chatRepository.shutdown();
+      _handleError(emit, error, stackTrace);
+    }
+    // }
+
+    // Future<void> _onChatQuestioned(
+    //   ChatQuestioned event,
+    //   Emitter<ChatsState> emit,
+    // ) async {
+    //   try {
+    //     emit(state.copyWith(status: ChatsStatus.questioning));
+    //     if (state.currentQuestion.isEmpty) {
+    //       add(ChatFinished());
+    //       return;
+    //     }
+    //     await chatRepository.askQuestion(state.currentQuestion.first);
+    //     emit(state.copyWith(currentQuestion: state.currentQuestion.sublist(1)));
+    //     add(ChatBeeped());
+    //   } catch (error, stackTrace) {
+    //     _handleError(emit, error, stackTrace);
+    //   }
   }
 
   Future<void> _onChatBeeped(ChatBeeped event, Emitter<ChatsState> emit) async {
@@ -67,19 +118,19 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     }
   }
 
-  void _onChatListened(ChatListened event, Emitter<ChatsState> emit) async {
-    try {
-      emit(state.copyWith(status: ChatsStatus.listening));
-      final userAnswer = await chatRepository.listenAnswer();
-      emit(
-        state.copyWith(recognizedText: [...state.recognizedText, userAnswer]),
-      );
-      await chatRepository.makeInterruption();
-      add(ChatQuestioned());
-    } catch (error, stackTrace) {
-      _handleError(emit, error, stackTrace);
-    }
-  }
+  // void _onChatListened(ChatListened event, Emitter<ChatsState> emit) async {
+  //   try {
+  //     emit(state.copyWith(status: ChatsStatus.listening));
+  //     final userAnswer = await chatRepository.listenAnswer();
+  //     emit(
+  //       state.copyWith(recognizedText: [...state.recognizedText, userAnswer]),
+  //     );
+  //     await chatRepository.makeInterruption();
+  //     add(ChatQuestioned());
+  //   } catch (error, stackTrace) {
+  //     _handleError(emit, error, stackTrace);
+  //   }
+  // }
 
   Future<void> _onChatFinished(
     ChatFinished event,

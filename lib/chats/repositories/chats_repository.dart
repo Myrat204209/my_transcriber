@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 import 'package:my_transcriber/chats/chats.dart';
 
@@ -17,6 +15,7 @@ abstract class ChatFailure with EquatableMixin implements Exception {
 class InitializeFailure extends ChatFailure {
   const InitializeFailure(super.error);
 }
+
 class SpeakFailure extends ChatFailure {
   const SpeakFailure(super.error);
 }
@@ -37,31 +36,31 @@ class ShutdownFailure extends ChatFailure {
   const ShutdownFailure(super.error);
 }
 
+// chat_repository.dart (updated)
 class ChatRepository {
   ChatRepository({required ChatService chatService})
     : _chatService = chatService;
 
   final ChatService _chatService;
+  bool _isInitialized = false;
 
-  /// Internal conversation log to accumulate exchanged texts.
-  final List<String> _conversationLog = [];
-
-  /// Initializes the chat service with the given locale.
   Future<void> initialize() async {
     try {
+      if (_isInitialized) return;
       await _chatService.initialize();
+      _isInitialized = true;
     } catch (error, stackTrace) {
+      _isInitialized = false;
       Error.throwWithStackTrace(InitializeFailure(error), stackTrace);
     }
   }
 
-  /// Speaks the provided text in the given locale.
-  /// Logs the spoken text into the conversation log.
   Future<void> askQuestion(String text) async {
     try {
-      // _conversationLog.add("Bot: $text");
+      if (!_isInitialized) throw StateError('Repository not initialized');
       await _chatService.speakText(text);
     } catch (error, stackTrace) {
+      await _chatService.stopSpeaking();
       Error.throwWithStackTrace(SpeakFailure(error), stackTrace);
     }
   }
@@ -76,33 +75,20 @@ class ChatRepository {
 
   Future<String> listenAnswer() async {
     try {
-      final String recognizedText = await _chatService.listenSpeech();
-      // _conversationLog.add("User: $recognizedText");
-      log('--------------Recognized text');
-      return recognizedText;
+      if (!_isInitialized) throw StateError('Repository not initialized');
+      return await _chatService.listenSpeech();
     } catch (error, stackTrace) {
+      await _chatService.stopListening();
       Error.throwWithStackTrace(ListenFailure(error), stackTrace);
     }
   }
 
-
-  /// Combines the conversation log into a single text and exports it as a DOCX file at [filePath].
-  // Future<void> exportConversation(String filePath) async {
-  //   try {
-  //     // final String conversationText = _conversationLog.join("\n");
-  //     // await _chatService.exportConversation(conversationText, filePath);
-  //   } catch (error, stackTrace) {
-  //     Error.throwWithStackTrace(ExportConversationFailure(error), stackTrace);
-  //   }
-  // }
-
-  /// Turns off all native tools like the microphone and TTS engine.
   Future<void> shutdown() async {
     try {
       await _chatService.shutdown();
+      _isInitialized = false;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ShutdownFailure(error), stackTrace);
     }
   }
 }
-

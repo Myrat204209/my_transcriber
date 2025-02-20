@@ -7,8 +7,6 @@ class QuestionsAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final currentQuestions =
-    //     context.select((QuestionsBloc bloc) => bloc.state.questions);
     return PrimaryButton(
       size: ButtonSize.normal,
       shape: ButtonShape.circle,
@@ -43,20 +41,6 @@ class QuestionsAddButton extends StatelessWidget {
                   child: const Text('Add Question'),
                   onPressed: () {
                     final question = controller.text;
-                    // if (currentQuestions.contains(question)) {
-                    //   showToast(
-                    //     context: context,
-                    //     builder: (context, overlay) {
-                    //       return SurfaceCard(
-                    //         child: Basic(
-                    //           title:
-                    //               const Text('Question has been added before'),
-                    //           trailingAlignment: Alignment.center,
-                    //         ),
-                    //       );
-                    //     },
-                    //   );
-                    // }
                     if (question.isNotEmpty) {
                       context.read<QuestionsBloc>().add(
                         QuestionAdded(question),

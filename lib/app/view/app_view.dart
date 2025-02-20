@@ -63,19 +63,14 @@ class _AppViewState extends State<AppView> {
                     log('Selected: $i  $selected');
                   },
                   children: [
-                    buildButton('Home', BootstrapIcons.house),
+                    buildButton('Home', BootstrapIcons.questionCircle),
                     buildButton('Explore', BootstrapIcons.mic),
-                    buildButton('Library', BootstrapIcons.musicNoteList),
                   ],
                 ),
               ],
               child: IndexedStack(
                 index: selected,
-                children: const [
-                  QuestionsPage(),
-                  ChatPage(),
-                  Center(child: Text('Library')),
-                ],
+                children: const [QuestionsPage(), ChatPage()],
               ),
             ),
           );

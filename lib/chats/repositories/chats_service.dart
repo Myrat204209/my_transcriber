@@ -1,4 +1,5 @@
-// import 'package:docx_template/docx_template.dart';
+// chat_service.dart (updated)
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter_beep_plus/flutter_beep_plus.dart';
@@ -10,92 +11,107 @@ class ChatService {
   final FlutterTts _flutterTts = FlutterTts();
   final SpeechToText _speechToText = SpeechToText();
   final FlutterBeepPlus _flutterBeepPlus = FlutterBeepPlus();
+  bool _isInitialized = false;
+  bool _isSpeaking = false;
+  bool _isListening = false;
 
-  // final List<String> _conversationLog = [];
+  Future<void> initialize() async {
+    try {
+      final langs = await _flutterTts.getLanguages;
+      log('Supported languages: $langs');
 
-  Future<void> initialize({String locale = 'ru'}) async {
-    // await _flutterTts.setLanguage('ru-RU');
-    await _flutterTts.setLanguage('ru-RU').onError( (error, stackTrace) => throw('TTS error: $error'));
-    log('Initialized TTS with locale: $locale');
+      await _flutterTts.setLanguage('ru-RU');
+      await _flutterTts.setSpeechRate(0.6);
+      await _flutterTts.setVolume(1.0);
+      await _flutterTts.setPitch(1.0);
+      
+      
+      await _flutterTts.awaitSpeakCompletion(true);
 
-    await _speechToText.initialize(
-      debugLogging: true,
+      await _speechToText.initialize(
+        debugLogging: true,
+        onStatus: (status) => logger.t('Speech status: $status'),
+        onError: (error) => logger.e('Speech engine error: $error'),
+      );
 
-      onStatus: (status) => logger.t('Speech status: $status'),
-      onError: (error) => throw('Speech error: $error'),
-    );
-    log('Initialized Speech to text with locale: $locale');
+      _isInitialized = true;
+    } catch (e, stackTrace) {
+      _isInitialized = false;
+      throw Error.throwWithStackTrace('Initialization failed: $e', stackTrace);
+    }
   }
 
   Future<void> speakText(String text) async {
-    // _conversationLog.add("Bot: $text");
-    log('Speaker started speaking: $text');
-    await _flutterTts.speak(text);
+    if (!_isInitialized) throw StateError('Service not initialized');
+    if (_isSpeaking) await stopSpeaking();
+
+    try {
+      _isSpeaking = true;
+      await _flutterTts.speak(text * 4);
+      await _flutterTts.awaitSpeakCompletion(true);
+    } finally {
+      _isSpeaking = false;
+    }
+  }
+
+  Future<void> stopSpeaking() async {
+    if (_isSpeaking) {
+      await _flutterTts.stop();
+      _isSpeaking = false;
+    }
   }
 
   Future<String> listenSpeech({
-    Duration listenDuration = const Duration(seconds: 5),
+    Duration listenDuration = const Duration(minutes: 2),
   }) async {
-    String recognizedText = "";
+    if (!_isInitialized) throw StateError('Service not initialized');
+    if (_isListening) await stopListening();
 
-    await _speechToText.listen(
-      onResult: (result) {
-        recognizedText = result.recognizedWords;
-      },
-      listenOptions: SpeechListenOptions(
-        autoPunctuation: true,
-        listenMode: ListenMode.deviceDefault,
-      ),
-      pauseFor: const Duration(seconds: 1),
-      listenFor: listenDuration,
-      localeId: 'ru_RU',
-    );
-    // _conversationLog.add("User: $recognizedText");
-    return recognizedText;
+    final completer = Completer<String>();
+    try {
+      _isListening = true;
+      _speechToText.listen(
+        onResult: (result) {
+          if (result.finalResult) {
+            completer.complete(result.recognizedWords);
+          }
+        },
+        listenOptions: SpeechListenOptions(
+          autoPunctuation: true,
+          listenMode: ListenMode.confirmation,
+        ),
+        listenFor: listenDuration,
+        localeId: 'ru-RU',
+        // onError: (error) => completer.completeError(error),
+      );
+
+      return await completer.future.timeout(listenDuration);
+    } finally {
+      await stopListening();
+    }
+  }
+
+  Future<void> stopListening() async {
+    if (_isListening) {
+      await _speechToText.stop();
+      _isListening = false;
+    }
   }
 
   Future<void> beep() async {
-    await _flutterBeepPlus.playSysSound(AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP);
-  }
-  // Future<String> conversationCycle(String textToSpeak) async {
-  //   await speakText(textToSpeak);
-  //   String userReply = await listenUserSpeech();
-  //   return userReply;
-  // }
-
-  /// Exports the accumulated conversation log into a DOCX file at [filePath].
-  /// This example uses a DOCX template file named "template.docx" from assets.
-  // Future<void> exportConversationToDocx(String filePath) async {
-  //   // Combine the conversation log.
-  //   final String conversationText = _conversationLog.join("\n");
-
-  //   // Load the DOCX template file.
-  //   final File templateFile = File('assets/template.docx');
-  //   if (!templateFile.existsSync()) {
-  //     throw Exception('Template file not found!');
-  //   }
-  //   final bytes = templateFile.readAsBytesSync();
-  //   // final docx = await DocxTemplate.fromBytes(bytes);
-
-  //   // Prepare content: "conversation" is the key used in the template.
-  //   // Content content = Content();
-  //   // content.add(TextContent("conversation", conversationText));
-
-  //   // Generate the DOCX file.
-  //   // final d = await docx.generate(content);
-  //   if (d != null) {
-  //     File(filePath).writeAsBytesSync(d);
-  //     print('Conversation exported to $filePath');
-  //   } else {
-  //     print('Failed to generate DOCX file.');
-  //   }
-  // }
-
-  /// Shuts down the service by stopping TTS and speech recognition.
-  Future<void> shutdown() async {
-    await _flutterTts.stop();
-    if (_speechToText.isListening) {
-      await _speechToText.stop();
+    try {
+      await _flutterBeepPlus.playSysSound(
+        AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP,
+      );
+    } catch (e) {
+      logger.e('Beep failed: $e');
+      rethrow;
     }
+  }
+
+  Future<void> shutdown() async {
+    await stopSpeaking();
+    await stopListening();
+    _isInitialized = false;
   }
 }
