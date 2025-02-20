@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:my_transcriber/permissions/permissions.dart';
 import 'package:talker/talker.dart';
 import 'package:my_transcriber/chats/chats.dart';
 
@@ -136,6 +137,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     Emitter<ChatsState> emit,
   ) async {
     try {
+      await PermissionClient().askStorage();
       await chatRepository.exportConversation(
         textConversation: state.recognizedText.toString(),
       );

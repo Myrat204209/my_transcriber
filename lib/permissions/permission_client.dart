@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:talker/talker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+final _talker = GetIt.I<Talker>();
+
 class PermissionClient {
   const PermissionClient();
 
@@ -21,15 +23,20 @@ class PermissionClient {
     try {
       Map<Permission, PermissionStatus> statuses = await _permissions.request();
 
-      // if (await Permission.manageExternalStorage.status.isDenied) {
-      //   statuses[Permission.manageExternalStorage] =
-      //       await Permission.manageExternalStorage.request();
-      // }
-
       return statuses;
-    } catch (e,st) {
-      GetIt.I<Talker>().error('Error requesting permissions: ',e,st);
+    } catch (e, st) {
+      _talker.error('Error requesting permissions: ', e, st);
       return {};
+    }
+  }
+
+  Future<void> askStorage() async {
+    if (await Permission.manageExternalStorage.status.isDenied) {
+      try {
+        await Permission.manageExternalStorage.request();
+      } catch (e, st) {
+        _talker.error('Error requesting storage permission: ', e, st);
+      }
     }
   }
 

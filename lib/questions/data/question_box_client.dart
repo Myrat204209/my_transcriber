@@ -31,10 +31,33 @@ class QuestionBoxClient {
 
   Future<void> reOrder({required int oldIndex, required int newIndex}) async {
     final updatedBox = [..._questionBox.values];
+
+    // Validate indices
+    if (oldIndex < 0 || oldIndex >= updatedBox.length) {
+      throw RangeError.range(
+        oldIndex,
+        0,
+        updatedBox.length - 1,
+        "oldIndex",
+        "Invalid oldIndex",
+      );
+    }
+    if (newIndex < 0 || newIndex > updatedBox.length) {
+      throw RangeError.range(
+        newIndex,
+        0,
+        updatedBox.length,
+        "newIndex",
+        "Invalid newIndex",
+      );
+    }
+
+    // Perform reordering
     final item = updatedBox.removeAt(oldIndex);
-    if (oldIndex < newIndex) newIndex -= 1;
+    if (oldIndex < newIndex) newIndex -= 1; // Adjust newIndex after removal
     updatedBox.insert(newIndex, item);
 
+    // Persist changes
     await _questionBox.clear();
     await _questionBox.addAll(updatedBox);
     await _questionBox.flush();
@@ -43,7 +66,13 @@ class QuestionBoxClient {
 
   void _validateIndex(int index) {
     if (index < 0 || index >= _questionBox.length) {
-      throw RangeError.range(index, 0, _questionBox.length - 1, 'index', 'Invalid index Custom Log Exception');
+      throw RangeError.range(
+        index,
+        0,
+        _questionBox.length - 1,
+        'index',
+        'Invalid index Custom Log Exception',
+      );
     }
   }
 }
