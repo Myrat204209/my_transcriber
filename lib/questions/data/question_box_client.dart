@@ -33,28 +33,33 @@ class QuestionBoxClient {
     final updatedBox = [..._questionBox.values];
 
     // Validate indices
-    if (oldIndex < 0 || oldIndex >= updatedBox.length) {
-      throw RangeError.range(
-        oldIndex,
-        0,
-        updatedBox.length - 1,
-        "oldIndex",
-        "Invalid oldIndex",
-      );
-    }
-    if (newIndex < 0 || newIndex > updatedBox.length) {
-      throw RangeError.range(
-        newIndex,
-        0,
-        updatedBox.length,
-        "newIndex",
-        "Invalid newIndex",
-      );
-    }
+    // if (oldIndex < 0 || oldIndex >= updatedBox.length) {
+    //   throw RangeError.range(
+    //     oldIndex,
+    //     0,
+    //     updatedBox.length - 1,
+    //     "oldIndex",
+    //     "Invalid oldIndex",
+    //   );
+    // }
+    // if (newIndex < 0 || newIndex > updatedBox.length) {
+    //   throw RangeError.range(
+    //     newIndex,
+    //     0,
+    //     updatedBox.length,
+    //     "newIndex",
+    //     "Invalid newIndex",
+    //   );
+    // }
 
     // Perform reordering
     final item = updatedBox.removeAt(oldIndex);
-    if (oldIndex < newIndex) newIndex -= 1; // Adjust newIndex after removal
+    if (oldIndex < newIndex && _questionBox.values.length == newIndex) {
+      newIndex -= 1;
+    } else if (newIndex < 0) {
+      newIndex += 1;
+    }
+
     updatedBox.insert(newIndex, item);
 
     // Persist changes

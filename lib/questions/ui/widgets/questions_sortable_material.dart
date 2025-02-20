@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:my_transcriber/questions/questions.dart';
+import 'package:talker/talker.dart' show Talker;
 
 class QuestionsSortableMaterial extends StatelessWidget {
   const QuestionsSortableMaterial({super.key, required this.names});
@@ -59,6 +61,9 @@ class QuestionsSortableMaterial extends StatelessWidget {
       },
 
       onReorder: (oldIndex, newIndex) {
+        GetIt.I<Talker>().warning(
+          'Reordering questions...oldIndex: $oldIndex, newIndex: $newIndex',
+        );
         context.read<QuestionsBloc>().add(
           QuestionsReordered(oldIndex: oldIndex, newIndex: newIndex),
         );
