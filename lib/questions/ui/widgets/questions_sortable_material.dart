@@ -3,27 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_transcriber/questions/questions.dart';
 
-class QuestionsSortableMaterial extends StatefulWidget {
+class QuestionsSortableMaterial extends StatelessWidget {
   const QuestionsSortableMaterial({super.key, required this.names});
   final List<String> names;
-  @override
-  State<QuestionsSortableMaterial> createState() =>
-      _QuestionsSortableMaterialState();
-}
-
-class _QuestionsSortableMaterialState extends State<QuestionsSortableMaterial> {
-  late List<String> names;
-  @override
-  void initState() {
-    names = [...widget.names];
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return
-    //
-    ReorderableListView.builder(
+    return ReorderableListView.builder(
       buildDefaultDragHandles: true,
       itemCount: names.length,
       itemBuilder: (context, index) {

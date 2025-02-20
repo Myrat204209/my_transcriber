@@ -17,9 +17,6 @@ class ChatQuestioned extends ChatsEvent {
   const ChatQuestioned();
 }
 
-class ChatBeeped extends ChatsEvent {
-  const ChatBeeped();
-}
 
 class ChatListened extends ChatsEvent {
   // final String recognizedText;

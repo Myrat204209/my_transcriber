@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
+import 'package:talker/talker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionClient {
@@ -27,8 +27,8 @@ class PermissionClient {
       // }
 
       return statuses;
-    } catch (e) {
-      GetIt.I<Logger>().e('Error requesting permissions: $e');
+    } catch (e,st) {
+      GetIt.I<Talker>().error('Error requesting permissions: ',e,st);
       return {};
     }
   }

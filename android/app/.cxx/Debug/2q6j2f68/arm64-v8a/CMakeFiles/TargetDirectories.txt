@@ -1,0 +1,2 @@
+C:/Users/m.annamuhammedov/Flutter_Projects/my_projects/my_transcriber/android/app/.cxx/Debug/2q6j2f68/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/m.annamuhammedov/Flutter_Projects/my_projects/my_transcriber/android/app/.cxx/Debug/2q6j2f68/arm64-v8a/CMakeFiles/rebuild_cache.dir

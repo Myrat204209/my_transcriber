@@ -38,12 +38,12 @@ class QuestionBoxClient {
     await _questionBox.clear();
     await _questionBox.addAll(updatedBox);
     await _questionBox.flush();
-    logger.d('Persisted: ${_questionBox.values}');
+    talker.debug('Persisted: ${_questionBox.values}');
   }
 
   void _validateIndex(int index) {
     if (index < 0 || index >= _questionBox.length) {
-      throw RangeError.range(index, 0, _questionBox.length - 1, 'index');
+      throw RangeError.range(index, 0, _questionBox.length - 1, 'index', 'Invalid index Custom Log Exception');
     }
   }
 }

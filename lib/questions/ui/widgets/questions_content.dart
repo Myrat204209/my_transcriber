@@ -8,11 +8,18 @@ class QuestionsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<SortableData<String>> names =
-        context
-            .select((QuestionsBloc bloc) => bloc.state.questions)
-            .map((e) => SortableData<String>(e))
-            .toList();
-    return QuestionsSortableShadcn(names: names);
+    // final List<SortableData<String>> names =
+    //     context
+    //         .select((QuestionsBloc bloc) => bloc.state.questions)
+    //         .map((e) => SortableData<String>(e))
+    //         .toList();
+    // final names = context.select((QuestionsBloc bloc) => bloc.state.questions);
+    // return QuestionsSortableShadcn(names: names);
+    return BlocBuilder<QuestionsBloc, QuestionsState>(
+      bloc: context.read<QuestionsBloc>(),
+      builder: (context, state) {
+        return QuestionsSortableMaterial(names: state.questions);
+      },
+    );
   }
 }

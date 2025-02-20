@@ -15,12 +15,13 @@ dependencies:
   flutter_bloc: ^9.0.0
   flutter_tts: ^4.2.2
   hive_ce_flutter: ^2.2.0
-  logger: ^2.5.0
   path: ^1.9.1
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
   shadcn_flutter: ^0.0.25
   speech_to_text: ^7.0.0
+  talker_bloc_logger: ^4.6.12
+  talker: ^4.6.12
 
 dev_dependencies:
   flutter_test:

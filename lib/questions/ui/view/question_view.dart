@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/questions/questions.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -6,6 +7,10 @@ class QuestionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QuestionsContent();
+    return BlocBuilder<QuestionsBloc, QuestionsState>(
+      builder: (context, state) {
+        return QuestionsContent();
+      },
+    );
   }
 }

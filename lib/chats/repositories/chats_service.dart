@@ -8,30 +8,34 @@ import 'package:my_transcriber/questions/questions.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatService {
-  final FlutterTts _flutterTts = FlutterTts();
-  final SpeechToText _speechToText = SpeechToText();
-  final FlutterBeepPlus _flutterBeepPlus = FlutterBeepPlus();
+  final _flutterTts = FlutterTts();
+  final _speechToText = SpeechToText();
+  final _flutterBeepPlus = FlutterBeepPlus();
   bool _isInitialized = false;
   bool _isSpeaking = false;
   bool _isListening = false;
 
   Future<void> initialize() async {
     try {
-      final langs = await _flutterTts.getLanguages;
-      log('Supported languages: $langs');
+      final langs = await _speechToText.locales();
+      log('Supported languages: ${langs.map((l) => l.localeId).toList()}');
 
       await _flutterTts.setLanguage('ru-RU');
-      await _flutterTts.setSpeechRate(0.6);
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setPitch(1.0);
-      
-      
+      _flutterTts.completionHandler = () {
+        // Future.delayed(Duration(seconds: 3), () {
+        //   _isSpeaking = false;
+        // });
+        _flutterBeepPlus.playSysSound(AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP);
+      };
+
       await _flutterTts.awaitSpeakCompletion(true);
 
       await _speechToText.initialize(
+        finalTimeout: Duration(seconds: 5),
         debugLogging: true,
-        onStatus: (status) => logger.t('Speech status: $status'),
-        onError: (error) => logger.e('Speech engine error: $error'),
+        onStatus: (status) => talker.info('Speech status: $status'),
+        onError:
+            (error) => talker.error('Speech engine error:', error.errorMsg),
       );
 
       _isInitialized = true;
@@ -47,7 +51,7 @@ class ChatService {
 
     try {
       _isSpeaking = true;
-      await _flutterTts.speak(text * 4);
+      await _flutterTts.speak(text, focus: true);
       await _flutterTts.awaitSpeakCompletion(true);
     } finally {
       _isSpeaking = false;
@@ -81,7 +85,7 @@ class ChatService {
           listenMode: ListenMode.confirmation,
         ),
         listenFor: listenDuration,
-        localeId: 'ru-RU',
+        localeId: 'ru_RU',
         // onError: (error) => completer.completeError(error),
       );
 
@@ -98,16 +102,16 @@ class ChatService {
     }
   }
 
-  Future<void> beep() async {
-    try {
-      await _flutterBeepPlus.playSysSound(
-        AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP,
-      );
-    } catch (e) {
-      logger.e('Beep failed: $e');
-      rethrow;
-    }
-  }
+  // Future<void> beep() async {
+  //   try {
+  //     await _flutterBeepPlus.playSysSound(
+  //       AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP,
+  //     );
+  //   } catch (e, st) {
+  //     talker.error('Beep failed:', e, st);
+  //     rethrow;
+  //   }
+  // }
 
   Future<void> shutdown() async {
     await stopSpeaking();

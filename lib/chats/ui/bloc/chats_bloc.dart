@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
+import 'package:talker/talker.dart';
 import 'package:my_transcriber/chats/chats.dart';
 
 part 'chats_event.dart';
 part 'chats_state.dart';
 
-final Logger logger = GetIt.I<Logger>();
+final Talker talker = GetIt.I<Talker>();
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final ChatRepository chatRepository;
@@ -15,7 +15,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ChatsBloc({required this.chatRepository}) : super(ChatsState.initial()) {
     on<ChatsStarted>(_onChatsStarted);
     on<ChatQuestioned>(_onChatQuestioned);
-    on<ChatBeeped>(_onChatBeeped);
+    // on<ChatBeeped>(_onChatBeeped);
     on<ChatListened>(_onChatListened);
     on<ChatFinished>(_onChatFinished);
   }
@@ -55,8 +55,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       );
 
       emit(state.copyWith(currentQuestion: state.currentQuestion.sublist(1)));
-      Future.delayed(const Duration(seconds: 5));
-      add(ChatBeeped());
+      add(ChatListened());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     }
@@ -107,16 +106,16 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     //   }
   }
 
-  Future<void> _onChatBeeped(ChatBeeped event, Emitter<ChatsState> emit) async {
-    try {
-      await chatRepository.makeInterruption();
+  // Future<void> _onChatBeeped(ChatBeeped event, Emitter<ChatsState> emit) async {
+  //   try {
+  //     // await chatRepository.makeInterruption();
 
-      emit(state.copyWith(status: ChatsStatus.beeping));
-      add(ChatListened());
-    } catch (error, stackTrace) {
-      _handleError(emit, error, stackTrace);
-    }
-  }
+  //     emit(state.copyWith(status: ChatsStatus.beeping));
+  //     add(ChatListened());
+  //   } catch (error, stackTrace) {
+  //     _handleError(emit, error, stackTrace);
+  //   }
+  // }
 
   // void _onChatListened(ChatListened event, Emitter<ChatsState> emit) async {
   //   try {
@@ -137,7 +136,9 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     Emitter<ChatsState> emit,
   ) async {
     try {
-      // await chatRepository.exportConversation("conversation.docx");
+      await chatRepository.exportConversation(
+        textConversation: state.recognizedText.toString(),
+      );
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));
     } catch (error, stackTrace) {
@@ -151,7 +152,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     StackTrace stackTrace,
   ) {
     emit(state.copyWith(status: ChatsStatus.failure));
-    logger.e('Error occurred', error: error, stackTrace: stackTrace);
+    talker.error('Error occurred', error, stackTrace);
     addError(error, stackTrace);
   }
 }

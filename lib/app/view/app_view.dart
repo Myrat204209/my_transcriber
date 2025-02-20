@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/questions/questions.dart';
+import 'package:my_transcriber/results/results.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class AppView extends StatefulWidget {
@@ -64,13 +65,14 @@ class _AppViewState extends State<AppView> {
                   },
                   children: [
                     buildButton('Home', BootstrapIcons.questionCircle),
-                    buildButton('Explore', BootstrapIcons.mic),
+                    buildButton('Microphone', BootstrapIcons.mic),
+                    buildButton('Results', BootstrapIcons.chatDots),
                   ],
                 ),
               ],
               child: IndexedStack(
                 index: selected,
-                children: const [QuestionsPage(), ChatPage()],
+                children: const [QuestionsPage(), ChatPage(), ResultsPage()],
               ),
             ),
           );

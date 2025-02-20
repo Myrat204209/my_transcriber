@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:my_transcriber/chats/chats.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// A base failure for the chat repository failures.
 abstract class ChatFailure with EquatableMixin implements Exception {
@@ -65,13 +68,13 @@ class ChatRepository {
     }
   }
 
-  Future<void> makeInterruption() async {
-    try {
-      await _chatService.beep();
-    } catch (error, stackTrace) {
-      Error.throwWithStackTrace(BeepFailure(error), stackTrace);
-    }
-  }
+  // Future<void> makeInterruption() async {
+  //   try {
+  //     await _chatService.beep();
+  //   } catch (error, stackTrace) {
+  //     Error.throwWithStackTrace(BeepFailure(error), stackTrace);
+  //   }
+  // }
 
   Future<String> listenAnswer() async {
     try {
@@ -80,6 +83,24 @@ class ChatRepository {
     } catch (error, stackTrace) {
       await _chatService.stopListening();
       Error.throwWithStackTrace(ListenFailure(error), stackTrace);
+    }
+  }
+
+  Future<void> exportConversation({
+    required String textConversation,
+  }) async {
+    try {
+      final directoryPath = await getDownloadsDirectory();
+      if (directoryPath == null) {
+        throw Error.throwWithStackTrace(
+          Exception('Failed to get downloads directory'),
+          StackTrace.current,
+        );
+      }
+      final file = File('${directoryPath.path}/Transcriber/Conversation.txt');
+      await file.writeAsString(textConversation);
+    } catch (e, st) {
+      Error.throwWithStackTrace(e, st);
     }
   }
 

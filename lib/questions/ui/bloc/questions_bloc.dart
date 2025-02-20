@@ -150,7 +150,7 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     StackTrace stackTrace,
   ) {
     emit(state.copyWith(status: QuestionsStatus.failure));
-    logger.f('Fatal Error', error: error, stackTrace: stackTrace);
+    talker.critical ('Fatal Error',  error, stackTrace);
     addError(error, stackTrace);
   }
 }
