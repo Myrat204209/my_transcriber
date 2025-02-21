@@ -22,6 +22,7 @@ dependencies:
   speech_to_text: ^7.0.0
   talker_bloc_logger: ^4.6.12
   talker: ^4.6.12
+  flutter_hooks: ^0.20.5
 
 dev_dependencies:
   flutter_test:
