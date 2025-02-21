@@ -86,18 +86,17 @@ class ChatRepository {
     }
   }
 
-  Future<void> exportConversation({
-    required String textConversation,
-  }) async {
+  Future<void> exportConversation({required String textConversation}) async {
     try {
-      final directoryPath = await getDownloadsDirectory();
-      if (directoryPath == null) {
-        throw Error.throwWithStackTrace(
-          Exception('Failed to get downloads directory'),
-          StackTrace.current,
-        );
+      Directory directory;
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download');
+      } else if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        throw UnsupportedError("Unsupported platform");
       }
-      final file = File('${directoryPath.path}/Transcriber/Conversation.txt');
+      final file = File('${directory.path}/Conversation.txt');
       await file.writeAsString(textConversation);
     } catch (e, st) {
       Error.throwWithStackTrace(e, st);
