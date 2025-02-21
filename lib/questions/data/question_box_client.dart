@@ -31,36 +31,25 @@ class QuestionBoxClient {
 
   Future<void> reOrder({required int oldIndex, required int newIndex}) async {
     final updatedBox = [..._questionBox.values];
-
-    // Validate indices
-    // if (oldIndex < 0 || oldIndex >= updatedBox.length) {
-    //   throw RangeError.range(
-    //     oldIndex,
-    //     0,
-    //     updatedBox.length - 1,
-    //     "oldIndex",
-    //     "Invalid oldIndex",
-    //   );
-    // }
-    // if (newIndex < 0 || newIndex > updatedBox.length) {
-    //   throw RangeError.range(
-    //     newIndex,
-    //     0,
-    //     updatedBox.length,
-    //     "newIndex",
-    //     "Invalid newIndex",
-    //   );
-    // }
-
-    // Perform reordering
-    final item = updatedBox.removeAt(oldIndex);
-    if (oldIndex < newIndex && _questionBox.values.length == newIndex) {
+    if (oldIndex < newIndex) {
       newIndex -= 1;
-    } else if (newIndex < 0) {
-      newIndex += 1;
     }
-
+    final String item = updatedBox.removeAt(oldIndex);
     updatedBox.insert(newIndex, item);
+
+    // final item = updatedBox.elementAt(oldIndex);
+    //       if (newIndex < 0) {
+    //         updatedBox
+    //           ..insert(0, item)
+    //           ..removeAt(oldIndex + 1);
+    //       } else if (newIndex >= updatedBox.length) {
+    //         updatedBox
+    //           ..add(item)
+    //           ..removeAt(oldIndex);
+    //       } else {
+    //         updatedBox.insert(newIndex, item);
+    //         updatedBox.removeAt(oldIndex + 1);
+    //       }
 
     // Persist changes
     await _questionBox.clear();

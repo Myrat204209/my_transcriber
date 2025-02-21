@@ -8,19 +8,37 @@ class ResultsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: readConversation(),
-      builder: (context, snapshot) {
-        return Column();
-      },
+    return Scaffold(
+      body: FutureBuilder(
+        future: readConversation(),
+        builder: (context, snapshot) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 10,
+            children: [
+              if (snapshot.hasData)
+                ...snapshot.data!.split(',').map((line) {
+                  return Text(line, style: TextStyle(fontSize: 24));
+                }),
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
 Future<String> readConversation() async {
   try {
-    final file = await _localFile;
-
+    Directory directory;
+    if (Platform.isAndroid) {
+      directory = Directory('/storage/emulated/0/Download');
+    } else if (Platform.isIOS) {
+      directory = await getApplicationDocumentsDirectory();
+    } else {
+      throw UnsupportedError("Unsupported platform");
+    }
+    final file = File('${directory.path}/Conversation.txt');
     // Read the file
     final contents = await file.readAsString();
 
@@ -29,13 +47,4 @@ Future<String> readConversation() async {
     // If encountering an error, return 0
     return '';
   }
-}
-  Future<String> get _localPath async {
-    final directory = await getDownloadsDirectory();
-
-    return '${directory!.path}/Transcriber';
-  }
-  Future<File> get _localFile async {
-  final path = await _localPath;
-  return File('$path/counter.txt');
 }

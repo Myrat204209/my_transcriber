@@ -117,22 +117,43 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     Emitter<QuestionsState> emit,
   ) async {
     try {
-      final updatedQuestions = [...state.questions];
-      final item = updatedQuestions.removeAt(event.oldIndex);
-      updatedQuestions.insert(event.newIndex, item);
+      final oldIndex = event.oldIndex;
+      int newIndex = event.newIndex;
+      emit(state.copyWith(status: QuestionsStatus.updating));
+      talker.debug(
+        'Reordering questions in BLoC: ${event.oldIndex} -> ${event.newIndex}',
+      );
 
+      final updatedQuestions = [...state.questions];
+      if (event.oldIndex < event.newIndex) {
+        newIndex -= 1;
+      }
+      final String item = updatedQuestions.removeAt(oldIndex);
+      updatedQuestions.insert(newIndex, item);
+
+      // if (event.newIndex < 0) {
+      //   updatedQuestions
+      //     ..insert(0, item)
+      //     ..removeAt(event.oldIndex + 1);
+      // } else if (event.newIndex >= updatedQuestions.length) {
+      //   updatedQuestions
+      //     ..add(item)
+      //     ..removeAt(event.oldIndex);
+      // } else {
+      //   updatedQuestions.insert(event.newIndex, item);
+      //   updatedQuestions.removeAt(event.oldIndex + 1);
+      // }
+      
       emit(
         state.copyWith(
-          status: QuestionsStatus.updating,
+          status: QuestionsStatus.success,
           questions: updatedQuestions,
         ),
       );
-
       await questionsRepository.reorderQuestions(
         oldIndex: event.oldIndex,
-        newIndex: event.newIndex,
+        newIndex: newIndex,
       );
-      emit(state.copyWith(status: QuestionsStatus.success));
     } catch (error, stackTrace) {
       emit(
         state.copyWith(
@@ -150,7 +171,7 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     StackTrace stackTrace,
   ) {
     emit(state.copyWith(status: QuestionsStatus.failure));
-    talker.critical ('Fatal Error',  error, stackTrace);
+    talker.critical('Fatal Error', error, stackTrace);
     addError(error, stackTrace);
   }
 }

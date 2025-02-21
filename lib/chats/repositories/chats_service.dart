@@ -1,6 +1,7 @@
 // chat_service.dart (updated)
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' show Platform;
 
 import 'package:flutter_beep_plus/flutter_beep_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -21,12 +22,13 @@ class ChatService {
       log('Supported languages: ${langs.map((l) => l.localeId).toList()}');
 
       await _flutterTts.setLanguage('ru-RU');
-      _flutterTts.completionHandler = () {
-        // Future.delayed(Duration(seconds: 3), () {
-        //   _isSpeaking = false;
-        // });
-        _flutterBeepPlus.playSysSound(AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP);
-      };
+      await _flutterTts.setSpeechRate(0.5);
+      if (Platform.isIOS) {
+        await _flutterTts.setSharedInstance(true);
+      }
+      // _flutterTts.completionHandler = () {
+      //   _flutterBeepPlus.playSysSound(AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP);
+      // };
 
       await _flutterTts.awaitSpeakCompletion(true);
 
@@ -75,6 +77,7 @@ class ChatService {
     try {
       _isListening = true;
       _speechToText.listen(
+        pauseFor: Duration(minutes: 1),
         onResult: (result) {
           if (result.finalResult) {
             completer.complete(result.recognizedWords);
@@ -101,17 +104,6 @@ class ChatService {
       _isListening = false;
     }
   }
-
-  // Future<void> beep() async {
-  //   try {
-  //     await _flutterBeepPlus.playSysSound(
-  //       AndroidSoundID.TONE_CDMA_ONE_MIN_BEEP,
-  //     );
-  //   } catch (e, st) {
-  //     talker.error('Beep failed:', e, st);
-  //     rethrow;
-  //   }
-  // }
 
   Future<void> shutdown() async {
     await stopSpeaking();
