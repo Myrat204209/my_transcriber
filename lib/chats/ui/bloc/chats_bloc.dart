@@ -14,7 +14,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ChatsBloc({required this.chatRepository}) : super(ChatsState.initial()) {
     on<ChatsStarted>(_onStarted);
     on<ChatsQuestioned>(_onQuestioned);
-    // on<ChatBeeped>(_onBeeped);
     on<ChatsPaused>(_onPause);
     on<ChatsListened>(_onListened);
     on<ChatsFinished>(_onFinished);
@@ -26,7 +25,8 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(
         state.copyWith(
           status: ChatsStatus.started,
-          currentQuestion: event.questionList,
+          questions: event.questionList,
+          currentQuestionIndex: 0,
         ),
       );
       add(ChatsQuestioned());
@@ -41,17 +41,22 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ) async {
     try {
       emit(state.copyWith(status: ChatsStatus.questioning));
-      if (state.currentQuestion.isEmpty) {
+      if (state.questions.length <= state.currentQuestionIndex) {
         add(ChatsFinished());
         return;
       }
 
       await _executeWithSafety(
-        action: () => chatRepository.askQuestion(state.currentQuestion.first),
+        action:
+            () => chatRepository.askQuestion(
+              state.questions[state.currentQuestionIndex],
+            ),
         cleanup: () => chatRepository.shutdown(),
       );
 
-      emit(state.copyWith(currentQuestion: state.currentQuestion.sublist(1)));
+      emit(
+        state.copyWith(currentQuestionIndex: state.currentQuestionIndex + 1),
+      );
       add(ChatsListened());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
@@ -91,8 +96,12 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ) async {
     try {
       await PermissionClient().askStorage();
+      List<String> combinedList = [];
+      for (int i = 0; i < state.questions.length; i++) {
+        combinedList.addAll([state.questions[i], state.recognizedText[i]]);
+      }
       await chatRepository.exportConversation(
-        textConversation: state.recognizedText.toString(),
+        textConversation: combinedList.toString(),
       );
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));

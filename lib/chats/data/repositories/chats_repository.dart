@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 abstract class ChatFailure with EquatableMixin implements Exception {
   const ChatFailure(this.error);
 
-  /// The error which was caught.
   final Object error;
 
   @override
@@ -28,8 +27,12 @@ class ListenFailure extends ChatFailure {
   const ListenFailure(super.error);
 }
 
-class BeepFailure extends ChatFailure {
-  const BeepFailure(super.error);
+class PauseFailure extends ChatFailure {
+  const PauseFailure(super.error);
+}
+
+class ResumeFailure extends ChatFailure {
+  const ResumeFailure(super.error);
 }
 
 class ExportConversationFailure extends ChatFailure {
@@ -46,49 +49,55 @@ class ChatRepository {
     : _chatService = chatService;
 
   final ChatService _chatService;
-  bool _isInitialized = false;
+  // bool _isInitialized = false;
 
   Future<void> initialize() async {
     try {
-      if (_isInitialized) return;
+      //   if (_isInitialized) return;
       await _chatService.initialize();
-      _isInitialized = true;
+      // _isInitialized = true;
     } catch (error, stackTrace) {
-      _isInitialized = false;
+      // _isInitialized = false;
       Error.throwWithStackTrace(InitializeFailure(error), stackTrace);
     }
   }
 
-
   Future<void> askQuestion(String text) async {
     try {
-      if (!_isInitialized) throw StateError('Repository not initialized');
-      await _chatService.speakText(text);
+      // if (!_isInitialized) throw StateError('Repository not initialized');
+      await _chatService.speak(text);
     } catch (error, stackTrace) {
-      await _chatService.stopSpeaking();
+      await _chatService.stopSpeaker();
       Error.throwWithStackTrace(SpeakFailure(error), stackTrace);
     }
   }
 
-
   Future<String> listenAnswer() async {
     try {
-      if (!_isInitialized) throw StateError('Repository not initialized');
-      return await _chatService.listenSpeech();
+      // if (!_isInitialized) throw StateError('Repository not initialized');
+      return await _chatService.listen();
     } catch (error, stackTrace) {
-      await _chatService.stopListening();
+      await _chatService.stopListener();
       Error.throwWithStackTrace(ListenFailure(error), stackTrace);
     }
   }
 
-  FutureOr<void> pauseChat()async{
+  FutureOr<void> pauseChat() async {
     try {
       await _chatService.makePause();
-    } catch (error,stackTrace) {
-      Error.throwWithStackTrace(ListenFailure(error), stackTrace);
-      
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(PauseFailure(error), stackTrace);
     }
   }
+
+  FutureOr<void> resumeChat() async {
+    try {
+      await _chatService.resumeSpeaker();
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(ResumeFailure(error), stackTrace);
+    }
+  }
+
   Future<void> exportConversation({required String textConversation}) async {
     try {
       Directory directory;
@@ -109,7 +118,6 @@ class ChatRepository {
   Future<void> shutdown() async {
     try {
       await _chatService.shutdown();
-      _isInitialized = false;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ShutdownFailure(error), stackTrace);
     }

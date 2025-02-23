@@ -5,7 +5,8 @@ enum ChatsStatus {
   started,
   questioning,
   pausing,
-  beeping,
+  resuming,
+  // beeping,
   listening,
   finished,
   failure,
@@ -13,30 +14,43 @@ enum ChatsStatus {
 
 final class ChatsState extends Equatable {
   final ChatsStatus status;
-  final List<String> currentQuestion;
+  final List<String> questions; // Store all questions
+  final int currentQuestionIndex; // Track current question index
   final List<String> recognizedText;
 
-  const ChatsState.initial() : this(status: ChatsStatus.initial);
+  const ChatsState.initial()
+    : this(
+        status: ChatsStatus.initial,
+        questions: const [],
+        currentQuestionIndex: 0,
+      );
 
   const ChatsState({
     required this.status,
-    this.currentQuestion = const [],
+    this.questions = const [],
+    this.currentQuestionIndex = 0,
     this.recognizedText = const [],
   });
 
   ChatsState copyWith({
     ChatsStatus? status,
-    List<String>? currentQuestion,
+    List<String>? questions,
+    int? currentQuestionIndex,
     List<String>? recognizedText,
-    bool? speechEnabled,
   }) {
     return ChatsState(
       status: status ?? this.status,
-      currentQuestion: currentQuestion ?? this.currentQuestion,
+      questions: questions ?? this.questions,
+      currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
       recognizedText: recognizedText ?? this.recognizedText,
     );
   }
 
   @override
-  List<Object?> get props => [status, currentQuestion, recognizedText];
+  List<Object?> get props => [
+    status,
+    questions,
+    currentQuestionIndex,
+    recognizedText,
+  ];
 }
