@@ -21,7 +21,7 @@ void main() {
     }
 
     final userQuestionBox = await Hive.openBox<String>('__user_questions__');
-    final questionsBoxClient = QuestionBoxClient(questionBox: userQuestionBox);
+    final questionsBoxClient = QuestionsBoxClient(questionBox: userQuestionBox);
     final questionsRepository = QuestionsRepository(
       questionBoxClient: questionsBoxClient,
     );

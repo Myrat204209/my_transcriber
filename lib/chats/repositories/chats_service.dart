@@ -59,6 +59,10 @@ class ChatService {
       _isSpeaking = false;
     }
   }
+  Future<void> makePause() async{
+
+    await _flutterTts.pause();
+  }
 
   Future<void> stopSpeaking() async {
     if (_isSpeaking) {

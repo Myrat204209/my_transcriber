@@ -31,10 +31,10 @@ class ReorderQuestionsFailure extends QuestionsFailure {
 }
 
 class QuestionsRepository {
-  const QuestionsRepository({required QuestionBoxClient questionBoxClient})
+  const QuestionsRepository({required QuestionsBoxClient questionBoxClient})
     : _questionBoxClient = questionBoxClient;
 
-  final QuestionBoxClient _questionBoxClient;
+  final QuestionsBoxClient _questionBoxClient;
 
   Future<List<String>> fetchQuestions() async {
     try {
@@ -75,5 +75,4 @@ class QuestionsRepository {
       Error.throwWithStackTrace(ReorderQuestionsFailure(error), stackTrace);
     }
   }
-
 }

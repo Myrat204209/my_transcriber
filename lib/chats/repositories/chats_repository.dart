@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -58,6 +59,7 @@ class ChatRepository {
     }
   }
 
+
   Future<void> askQuestion(String text) async {
     try {
       if (!_isInitialized) throw StateError('Repository not initialized');
@@ -68,13 +70,6 @@ class ChatRepository {
     }
   }
 
-  // Future<void> makeInterruption() async {
-  //   try {
-  //     await _chatService.beep();
-  //   } catch (error, stackTrace) {
-  //     Error.throwWithStackTrace(BeepFailure(error), stackTrace);
-  //   }
-  // }
 
   Future<String> listenAnswer() async {
     try {
@@ -86,6 +81,14 @@ class ChatRepository {
     }
   }
 
+  FutureOr<void> pauseChat()async{
+    try {
+      await _chatService.makePause();
+    } catch (error,stackTrace) {
+      Error.throwWithStackTrace(ListenFailure(error), stackTrace);
+      
+    }
+  }
   Future<void> exportConversation({required String textConversation}) async {
     try {
       Directory directory;

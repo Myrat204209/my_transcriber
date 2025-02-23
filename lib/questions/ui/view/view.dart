@@ -1,2 +1,2 @@
-export 'question_page.dart';
-export 'question_view.dart';
+export 'questions_page.dart';
+export 'questions_view.dart';

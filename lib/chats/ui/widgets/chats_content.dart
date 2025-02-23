@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/chats/chats.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn show OutlinedContainer;
 
 class ChatsContent extends StatelessWidget {
   const ChatsContent({super.key});

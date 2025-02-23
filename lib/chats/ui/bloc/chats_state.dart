@@ -4,6 +4,7 @@ enum ChatsStatus {
   initial,
   started,
   questioning,
+  pausing,
   beeping,
   listening,
   finished,

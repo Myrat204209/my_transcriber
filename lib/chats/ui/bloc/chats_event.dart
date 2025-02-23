@@ -13,20 +13,23 @@ class ChatsStarted extends ChatsEvent {
   const ChatsStarted({required this.questionList});
 }
 
-class ChatQuestioned extends ChatsEvent {
-  const ChatQuestioned();
+class ChatsQuestioned extends ChatsEvent {
+  const ChatsQuestioned();
 }
 
+class ChatsPaused extends ChatsEvent {
+  const ChatsPaused();
+}
 
-class ChatListened extends ChatsEvent {
+class ChatsListened extends ChatsEvent {
   // final String recognizedText;
-  // const ChatListened(this.recognizedText); 
-  const ChatListened();
+  // const ChatListened(this.recognizedText);
+  const ChatsListened();
 
   // @override
   // List<Object?> get props => [recognizedText];
 }
 
-class ChatFinished extends ChatsEvent {
-  const ChatFinished();
+class ChatsFinished extends ChatsEvent {
+  const ChatsFinished();
 }
