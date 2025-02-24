@@ -15,48 +15,64 @@ class ChatsControlPanel extends HookWidget {
 
       debugLabel: 'iconAnimation',
     );
-
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 20,
-      children: [
-        IconButton(
+        
+    return chatStatus == ChatsStatus.ending
+        ? OutlinedButton(
           onPressed: () {
-            animationController.isCompleted
-                ? animationController.reverse()
-                : animationController.forward();
-            // (chatStatus == ChatsStatus.listening ||
-            //         chatStatus == ChatsStatus.beeping ||
-            //         chatStatus == ChatsStatus.questioning)
-            //     ? context.read<ChatsBloc>().add(ChatsPaused())
-            //     : context.read<ChatsBloc>().add(
-            //       ChatsStarted(questionList: [...questionsList]),
-            //     );
+            context.read<ChatsBloc>().add(ChatsFinished());
+            animationController.reset();
           },
-          icon: AnimatedBuilder(
-            animation: animationController,
-            builder:
-                (context, child) => AnimatedIcon(
-                  progress: animationController,
-                  color:
-                      Color.lerp(
-                        Colors.green,
-                        Colors.white,
-                        animationController.value,
-                      )!,
-                  icon: AnimatedIcons.play_pause,
-                  size: 60,
-                ),
-          ),
-        ),
+          child: Text('Save the chat'),
+        )
+        : Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 20,
+          children: [
+            IconButton(
+              onPressed: () {
+                talker.debug('AnimationController Status Before: ${animationController.status}' );
 
-        IconButton(
-          icon: Icon(Icons.stop_circle_rounded, color: Colors.red, size: 40),
-          autofocus: true,
-          onPressed: () => context.read<ChatsBloc>().add(ChatsFinished()),
-        ),
-      ],
-    );
+                animationController.isDismissed 
+                    ? animationController.forward()
+                    : animationController.reverse();
+                (
+                        chatStatus == ChatsStatus.questioning)
+                    ? context.read<ChatsBloc>().add(ChatsPaused())
+                    : (chatStatus == ChatsStatus.pausing)
+                    ? context.read<ChatsBloc>().add(ChatsResumed())
+                    : context.read<ChatsBloc>().add(
+                      ChatsStarted(questionList: [...questionsList]),
+                    );
+                talker.warning('AnimationController Status After: ${animationController.status}' );
+              },
+              icon: AnimatedBuilder(
+                animation: animationController,
+                builder:
+                    (context, child) => AnimatedIcon(
+                      progress: animationController,
+                      color:
+                          Color.lerp(
+                            Colors.green,
+                            Colors.white,
+                            animationController.value,
+                          )!,
+                      icon: AnimatedIcons.play_pause,
+                      size: 60,
+                    ),
+              ),
+            ),
+
+            IconButton(
+              icon: Icon(
+                Icons.stop_circle_rounded,
+                color: Colors.red,
+                size: 40,
+              ),
+              autofocus: true,
+              onPressed: () => context.read<ChatsBloc>().add(ChatsFinished()),
+            ),
+          ],
+        );
   }
 }

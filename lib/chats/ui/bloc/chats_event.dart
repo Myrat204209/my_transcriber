@@ -8,6 +8,9 @@ sealed class ChatsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ChatsInitialized extends ChatsEvent{
+  const ChatsInitialized();
+}
 class ChatsStarted extends ChatsEvent {
   final List<String> questionList;
   const ChatsStarted({required this.questionList});
@@ -21,6 +24,10 @@ class ChatsPaused extends ChatsEvent {
   const ChatsPaused();
 }
 
+class ChatsResumed extends ChatsEvent {
+  const ChatsResumed();
+}
+
 class ChatsListened extends ChatsEvent {
   // final String recognizedText;
   // const ChatListened(this.recognizedText);
@@ -28,6 +35,10 @@ class ChatsListened extends ChatsEvent {
 
   // @override
   // List<Object?> get props => [recognizedText];
+}
+
+class ChatsEnded extends ChatsEvent {
+  const ChatsEnded();
 }
 
 class ChatsFinished extends ChatsEvent {

@@ -15,8 +15,8 @@ class SpeechToTextService {
   Future<String> listenSpeech({
     Duration listenDuration = const Duration(minutes: 2),
   }) async {
-    if (_speechToText.isAvailable) throw StateError('Speech Service not initialized');
-    if (_speechToText.isListening) await stopListening();
+    // if (_speechToText.isAvailable) throw StateError('Speech Service not initialized');
+    // if (_speechToText.isListening) await stopListening();
 
     final completer = Completer<String>();
     try {

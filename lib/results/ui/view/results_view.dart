@@ -1,50 +1,41 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:my_transcriber/chats/chats.dart';
+
+final exporter = ExportService();
 
 class ResultsView extends StatelessWidget {
   const ResultsView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: readConversation(),
+        future: exporter.listConversationFiles(),
         builder: (context, snapshot) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              if (snapshot.hasData)
-                ...snapshot.data!.split(',').map((line) {
-                  return Text(line, style: TextStyle(fontSize: 24));
-                }),
-            ],
-          );
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data?.length ?? 0,
+              itemBuilder:
+                  (context, index) => ListTile(
+                    title: Text('${snapshot.data![index]}'),
+                    trailing: IconButton(
+                      onPressed: () {
+                        exporter.deleteFile(snapshot.data![index]);
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
+                    onTap: () => exporter.openFile(snapshot.data![index]),
+                  ),
+            );
+          } else {
+            return SizedBox(child: Text('No Data'));
+          }
         },
+        // child: Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   spacing: 10,
+        //   children: [],
+        // ),
       ),
     );
-  }
-}
-
-Future<String> readConversation() async {
-  try {
-    Directory directory;
-    if (Platform.isAndroid) {
-      directory = Directory('/storage/emulated/0/Download');
-    } else if (Platform.isIOS) {
-      directory = await getApplicationDocumentsDirectory();
-    } else {
-      throw UnsupportedError("Unsupported platform");
-    }
-    final file = File('${directory.path}/Conversation.txt');
-    // Read the file
-    final contents = await file.readAsString();
-
-    return contents;
-  } catch (e) {
-    // If encountering an error, return 0
-    return '';
   }
 }

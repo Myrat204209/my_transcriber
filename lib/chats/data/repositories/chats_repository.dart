@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:my_transcriber/chats/chats.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// A base failure for the chat repository failures.
 abstract class ChatFailure with EquatableMixin implements Exception {
@@ -90,28 +88,25 @@ class ChatRepository {
     }
   }
 
-  FutureOr<void> resumeChat() async {
+  FutureOr<void> resumeChat({required String text}) async {
     try {
-      await _chatService.resumeSpeaker();
+      await _chatService.resumeSpeaker(text);
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ResumeFailure(error), stackTrace);
     }
   }
 
-  Future<void> exportConversation({required String textConversation}) async {
+  Future<void> exportConversation({
+    required List<String> askedQuestions,
+    required List<String> answeredPhrases,
+  }) async {
     try {
-      Directory directory;
-      if (Platform.isAndroid) {
-        directory = Directory('/storage/emulated/0/Download');
-      } else if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
-      } else {
-        throw UnsupportedError("Unsupported platform");
-      }
-      final file = File('${directory.path}/Conversation.txt');
-      await file.writeAsString(textConversation);
+      await _chatService.exportChat(
+        answers: answeredPhrases,
+        questions: askedQuestions,
+      );
     } catch (e, st) {
-      Error.throwWithStackTrace(e, st);
+      Error.throwWithStackTrace(ExportConversationFailure(e), st);
     }
   }
 

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_transcriber/permissions/permissions.dart';
 import 'package:my_transcriber/chats/chats.dart';
 
 part 'chats_event.dart';
@@ -12,11 +11,22 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final ChatRepository chatRepository;
 
   ChatsBloc({required this.chatRepository}) : super(ChatsState.initial()) {
+    on<ChatsInitialized>(_onInit);
     on<ChatsStarted>(_onStarted);
     on<ChatsQuestioned>(_onQuestioned);
-    on<ChatsPaused>(_onPause);
+    on<ChatsPaused>(_onPaused);
+    on<ChatsResumed>(_onResumed);
     on<ChatsListened>(_onListened);
+    on<ChatsEnded>(_onEnded);
     on<ChatsFinished>(_onFinished);
+  }
+  
+
+  void _onInit(ChatsInitialized event, Emitter<ChatsState> emit) {
+    if (state.status != ChatsStatus.finished) {
+      return;
+    }
+    emit(ChatsState.initial());
   }
 
   Future<void> _onStarted(ChatsStarted event, Emitter<ChatsState> emit) async {
@@ -42,7 +52,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     try {
       emit(state.copyWith(status: ChatsStatus.questioning));
       if (state.questions.length <= state.currentQuestionIndex) {
-        add(ChatsFinished());
+        add(ChatsEnded());
         return;
       }
 
@@ -63,12 +73,26 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     }
   }
 
-  FutureOr<void> _onPause(ChatsPaused event, Emitter<ChatsState> emit) async {
+  FutureOr<void> _onPaused(ChatsPaused event, Emitter<ChatsState> emit) async {
     try {
-      // await chatRepository.pauseChat();
-      // emit(state.copyWith(status: ChatsStatus.pausing));
+      emit(state.copyWith(status: ChatsStatus.pausing));
+      await chatRepository.pauseChat();
     } catch (e, st) {
       _handleError(emit, e, st);
+    }
+  }
+  FutureOr<void> _onResumed(
+    ChatsResumed event,
+    Emitter<ChatsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: ChatsStatus.resuming));
+      await chatRepository.resumeChat(
+        text: state.questions[state.currentQuestionIndex],
+      );
+      add(ChatsQuestioned());
+    } catch (error, stackTrace) {
+      _handleError(emit, error, stackTrace);
     }
   }
 
@@ -95,16 +119,13 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     Emitter<ChatsState> emit,
   ) async {
     try {
-      await PermissionClient().askStorage();
-      List<String> combinedList = [];
-      for (int i = 0; i < state.questions.length; i++) {
-        combinedList.addAll([state.questions[i], state.recognizedText[i]]);
-      }
       await chatRepository.exportConversation(
-        textConversation: combinedList.toString(),
+        answeredPhrases: state.recognizedText,
+        askedQuestions: state.questions,
       );
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));
+      add(ChatsInitialized());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     }
@@ -130,5 +151,17 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     emit(state.copyWith(status: ChatsStatus.failure));
     talker.error('Error occurred', error, stackTrace);
     addError(error, stackTrace);
+  }
+
+  
+
+  void _onEnded(ChatsEnded event, Emitter<ChatsState> emit) {
+    try {
+      emit(state.copyWith(status: ChatsStatus.ending));
+
+      // add(ChatsFinished());
+    } catch (error, stackTrace) {
+      _handleError(emit, error, stackTrace);
+    }
   }
 }

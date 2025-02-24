@@ -6,22 +6,23 @@ enum ChatsStatus {
   questioning,
   pausing,
   resuming,
-  // beeping,
   listening,
+  ending,
   finished,
   failure,
 }
 
 final class ChatsState extends Equatable {
   final ChatsStatus status;
-  final List<String> questions; // Store all questions
-  final int currentQuestionIndex; // Track current question index
+  final List<String> questions; 
+  final int currentQuestionIndex; 
   final List<String> recognizedText;
 
   const ChatsState.initial()
     : this(
         status: ChatsStatus.initial,
         questions: const [],
+        recognizedText: const [],
         currentQuestionIndex: 0,
       );
 

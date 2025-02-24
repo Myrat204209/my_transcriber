@@ -10,6 +10,7 @@ class TextToSpeechService {
     try {
       await _flutterTts.setLanguage('ru-RU');
       await _flutterTts.setSpeechRate(0.5);
+      
       if (Platform.isIOS) {
         await _flutterTts.setSharedInstance(true);
       }
@@ -40,8 +41,9 @@ class TextToSpeechService {
   Future<void> makePause() async {
     await _flutterTts.pause();
   }
-  Future<void> resumeSpeaker() async {
-    // await _flutterTts.resume();
+
+  Future<void> resumeSpeaker(String text) async {
+    await _flutterTts.speak(text);
   }
 
   Future<void> stopSpeaking() async {
