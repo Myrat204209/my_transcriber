@@ -32,7 +32,7 @@ class App extends StatelessWidget {
         QuestionsBloc(questionsRepository: _questionsRepository)
           ..add(QuestionsInitialized());
     final chatsBloc = ChatsBloc(chatRepository: _chatRepository);
-    final resultsBloc = ResultsBloc(resultsRepository: _resultsRepository);
+    final resultsBloc = ResultsBloc(resultsRepository: _resultsRepository)..add(ResultsListed());
 
     return MultiRepositoryProvider(
       providers: [

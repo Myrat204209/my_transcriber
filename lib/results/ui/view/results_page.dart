@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/results/results.dart';
 
 class ResultsPage extends StatelessWidget {
@@ -7,7 +6,6 @@ class ResultsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<ResultsBloc>().add(ResultsListed());
     return ResultsView();
   }
 }

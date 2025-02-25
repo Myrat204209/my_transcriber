@@ -28,6 +28,7 @@ void main() {
     );
     final chatService = ChatService();
     final chatRepository = ChatRepository(chatService: chatService);
+    // final exportService = ExportService()..init();
     final exportService = ExportService();
     final resultsRepository = ResultsRepository(exportService: exportService);
     return App(

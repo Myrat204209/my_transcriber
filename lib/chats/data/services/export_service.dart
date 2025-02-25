@@ -5,7 +5,7 @@ class ExportService {
   Future<void> init() async {
     try {
       await _checkStoragePermissions();
-    _isInit = true;
+      _isInit = true;
     } catch (error) {
       _isInit = false;
       throw (Exception('CheckStoragePermission error in ExportService'));
@@ -17,7 +17,8 @@ class ExportService {
     required List<String> answers,
   }) async {
     if (!_isInit) {
-      throw Exception('Storage permission denied');
+      await init();
+      // throw Exception('Storage permission denied');
     }
 
     final dir = await _getPlatformDirectory();
@@ -96,7 +97,7 @@ Future<Directory> _getPlatformDirectory() async {
   if (Platform.isAndroid) {
     final downloadDir = await getExternalStorageDirectory();
     final baseDir = Directory('${downloadDir?.path}/Talkie');
-    return Directory('${baseDir.path}}');
+    return Directory(baseDir.path);
   } else if (Platform.isIOS) {
     final docsDir = await getApplicationDocumentsDirectory();
     return Directory('${docsDir.path}/Talkie');

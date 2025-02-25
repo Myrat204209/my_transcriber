@@ -23,15 +23,17 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   
 
   void _onInit(ChatsInitialized event, Emitter<ChatsState> emit) {
-    if (state.status != ChatsStatus.finished) {
-      return;
-    }
+    // if (state.status != ChatsStatus.finished) {
+    //   return;
+    // }
     emit(ChatsState.initial());
   }
 
   Future<void> _onStarted(ChatsStarted event, Emitter<ChatsState> emit) async {
     try {
+
       await chatRepository.initialize();
+      talker.critical('ChatRepository initialize ');
       emit(
         state.copyWith(
           status: ChatsStatus.started,

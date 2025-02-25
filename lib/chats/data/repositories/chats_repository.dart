@@ -52,6 +52,8 @@ class ChatRepository {
   Future<void> initialize() async {
     try {
       //   if (_isInitialized) return;
+      talker.critical('ChatService initialize ');
+
       await _chatService.initialize();
       // _isInitialized = true;
     } catch (error, stackTrace) {

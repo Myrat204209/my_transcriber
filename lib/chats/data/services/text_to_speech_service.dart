@@ -8,6 +8,7 @@ class TextToSpeechService {
 
   Future<void> initialize() async {
     try {
+      talker.critical('FlutterTTS initialize ');
       await _flutterTts.setLanguage('ru-RU');
       await _flutterTts.setSpeechRate(0.5);
       

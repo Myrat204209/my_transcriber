@@ -24,9 +24,13 @@ class ChatService  {
 
   Future<void> initialize() async {
     try {
+            talker.critical('FlutterTTS initialize ');
+
       await _flutterTts.initialize();
+            talker.critical('FlutterSTT initialize ');
       await _speechToText.initialize();
-      // await _exporter.init();
+            talker.critical('Flutter Exporter initialize ');
+      await _exporter.init();
     } catch (e, stackTrace) {
       throw Error.throwWithStackTrace('Initialization failed: $e', stackTrace);
     }

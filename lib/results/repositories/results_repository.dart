@@ -35,6 +35,7 @@ class ResultsRepository {
 
   Future<void> initialize() async {
     try {
+      talker.error('ExportService initialize ');
       await _exporter.init();
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ResultsInitializeFailure(error), stackTrace);

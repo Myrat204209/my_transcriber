@@ -4,8 +4,9 @@ class SpeechToTextService {
   final _speechToText = SpeechToText();
 
   Future<void> initialize() async {
+    talker.critical('FlutterSTT initialize ');
     await _speechToText.initialize(
-      finalTimeout: Duration(seconds: 5),
+      // finalTimeout: Duration(seconds: 5),
       debugLogging: true,
       onStatus: (status) => talker.info('Speech status: $status'),
       onError: (error) => talker.error('Speech engine error:', error.errorMsg),
@@ -13,7 +14,7 @@ class SpeechToTextService {
   }
 
   Future<String> listenSpeech({
-    Duration listenDuration = const Duration(minutes: 2),
+    Duration listenDuration = const Duration(minutes: 10),
   }) async {
     // if (_speechToText.isAvailable) throw StateError('Speech Service not initialized');
     // if (_speechToText.isListening) await stopListening();
