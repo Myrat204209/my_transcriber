@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/chats/chats.dart';
+import 'package:my_transcriber/results/results.dart';
 
 final exporter = ExportService();
 
@@ -7,34 +9,27 @@ class ResultsView extends StatelessWidget {
   const ResultsView({super.key});
   @override
   Widget build(BuildContext context) {
+    context.select((ResultsBloc bloc) => bloc.state.chats);
     return Scaffold(
-      body: FutureBuilder(
-        future: exporter.listConversationFiles(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data?.length ?? 0,
-              itemBuilder:
-                  (context, index) => ListTile(
-                    title: Text('${snapshot.data![index]}'),
-                    trailing: IconButton(
-                      onPressed: () {
-                        exporter.deleteFile(snapshot.data![index]);
-                      },
-                      icon: Icon(Icons.delete),
-                    ),
-                    onTap: () => exporter.openFile(snapshot.data![index]),
+      //TODO: Make it possible that it will fetch whenever the exported data will appear, try to turn Future into Stream
+      body: BlocBuilder<ResultsBloc, ResultsState>(
+        // stream: exporter.watchListOfChats(),
+        builder: (context, state) {
+          return ListView.builder(
+            itemCount: state.chats.length,
+            itemBuilder:
+                (context, index) => ListTile(
+                  title: Text('${state.chats[index]}'),
+                  trailing: IconButton(
+                    onPressed: () {
+                      exporter.deleteFile(state.chats[index]);
+                    },
+                    icon: Icon(Icons.delete),
                   ),
-            );
-          } else {
-            return SizedBox(child: Text('No Data'));
-          }
+                  onTap: () => exporter.openFile(state.chats[index]),
+                ),
+          );
         },
-        // child: Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   spacing: 10,
-        //   children: [],
-        // ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/questions/questions.dart';
+import 'package:my_transcriber/results/results.dart';
 
 import 'app_view.dart';
 
@@ -12,15 +13,18 @@ class App extends StatelessWidget {
       // required StorageRepository storageRepository,
       required ChatRepository chatRepository,
       required QuestionsRepository questionsRepository,
+      required ResultsRepository resultsRepository,
       super.key})
       :
         //  _storageRepository = storageRepository,
+        _resultsRepository = resultsRepository,
         _chatRepository = chatRepository,
         _questionsRepository = questionsRepository;
   // final StorageRepository _storageRepository;
 
   final QuestionsRepository _questionsRepository;
   final ChatRepository _chatRepository;
+  final ResultsRepository _resultsRepository;
   @override
   Widget build(BuildContext context) {
     // final themeModeBloc = ThemeModeBloc();
@@ -28,17 +32,21 @@ class App extends StatelessWidget {
         QuestionsBloc(questionsRepository: _questionsRepository)
           ..add(QuestionsInitialized());
     final chatsBloc = ChatsBloc(chatRepository: _chatRepository);
+    final resultsBloc = ResultsBloc(resultsRepository: _resultsRepository);
 
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider.value(value: _chatRepository,),
         // RepositoryProvider.value(value: _storageRepository),
         RepositoryProvider.value(value: _questionsRepository),
+        RepositoryProvider.value(value: _resultsRepository),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: questionsBloc),
-          BlocProvider.value(value: chatsBloc)
+          BlocProvider.value(value: chatsBloc),
+          BlocProvider.value(value: resultsBloc)
+
           // BlocProvider.value(value: productCubit),
         ],
         child: const AppView(),

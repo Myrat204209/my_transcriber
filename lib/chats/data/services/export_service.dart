@@ -1,14 +1,24 @@
 part of 'chats_service.dart';
 
 class ExportService {
+  bool _isInit = false;
+  Future<void> init() async {
+    try {
+      await _checkStoragePermissions();
+    _isInit = true;
+    } catch (error) {
+      _isInit = false;
+      throw (Exception('CheckStoragePermission error in ExportService'));
+    }
+  }
+
   Future<File> exportToStorage({
     required List<String> questions,
     required List<String> answers,
   }) async {
-    _checkStoragePermissions();
-    // if (!await _checkStoragePermissions()) {
-    //   throw Exception('Storage permission denied');
-    // }
+    if (!_isInit) {
+      throw Exception('Storage permission denied');
+    }
 
     final dir = await _getPlatformDirectory();
     if (!await dir.exists()) {
@@ -16,7 +26,7 @@ class ExportService {
     }
 
     final content = _generateConversationText(questions, answers);
-    final file = File('${dir.path}/conversation.txt');
+    final file = File('${dir.path}/Chat_${_getFormattedTimestamp()}.txt');
     return file.writeAsString(content);
   }
 
@@ -39,6 +49,20 @@ class ExportService {
             FileSystemEntity.isFileSync(file.path);
       }).toList()
       ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+  }
+
+  Stream<List<FileSystemEntity>> watchListOfChats() async* {
+    yield await listConversationFiles();
+
+    yield* listConversationFiles().asStream().asyncMap((event) async {
+      return await listConversationFiles();
+    });
+    // Watch for changes in the local storage
+    // yield* _reportsBox
+    //     .watch(key: employee.employeeCode)
+    //     .asyncMap((event) async {
+    //   return await getNumberOfOperations(employee);
+    // });
   }
 
   Future<void> openFile(FileSystemEntity file) async {
@@ -72,14 +96,10 @@ Future<Directory> _getPlatformDirectory() async {
   if (Platform.isAndroid) {
     final downloadDir = await getExternalStorageDirectory();
     final baseDir = Directory('${downloadDir?.path}/Talkie');
-    return Directory(
-      '${baseDir.path}/Conversation_${_getFormattedTimestamp()}',
-    );
+    return Directory('${baseDir.path}}');
   } else if (Platform.isIOS) {
     final docsDir = await getApplicationDocumentsDirectory();
-    return Directory(
-      '${docsDir.path}/Talkie/Conversation_${_getFormattedTimestamp()}',
-    );
+    return Directory('${docsDir.path}/Talkie');
   }
   throw UnsupportedError('Unsupported platform');
 }
@@ -91,10 +111,6 @@ String _getFormattedTimestamp() {
 Future<void> _checkStoragePermissions() async {
   await PermissionClient().askStorage();
 }
-
-
-
-
 
     // Directory directory;
     // if (Platform.isAndroid) {

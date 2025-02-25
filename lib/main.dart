@@ -6,6 +6,7 @@ import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/permissions/permissions.dart';
 
 import 'package:my_transcriber/questions/questions.dart';
+import 'package:my_transcriber/results/results.dart';
 
 void main() {
   bootstrap(() async {
@@ -27,8 +28,11 @@ void main() {
     );
     final chatService = ChatService();
     final chatRepository = ChatRepository(chatService: chatService);
+    final exportService = ExportService();
+    final resultsRepository = ResultsRepository(exportService: exportService);
     return App(
       // storageRepository: storageRepository,
+      resultsRepository: resultsRepository,
       chatRepository: chatRepository,
       questionsRepository: questionsRepository,
     );

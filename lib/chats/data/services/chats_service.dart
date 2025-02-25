@@ -10,7 +10,6 @@ import 'package:my_transcriber/questions/questions.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, getExternalStorageDirectory;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 part 'text_to_speech_service.dart';
@@ -27,6 +26,7 @@ class ChatService  {
     try {
       await _flutterTts.initialize();
       await _speechToText.initialize();
+      // await _exporter.init();
     } catch (e, stackTrace) {
       throw Error.throwWithStackTrace('Initialization failed: $e', stackTrace);
     }
