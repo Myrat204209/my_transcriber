@@ -27,7 +27,6 @@ class QuestionsBoxClient {
   }
 
   Future<void> reOrder({required int oldIndex, required int newIndex}) async {
-    await Future.delayed(Duration.zero);
 
     final updatedBox = [..._questionBox.values];
 
@@ -36,13 +35,10 @@ class QuestionsBoxClient {
     }
     final String item = updatedBox.removeAt(oldIndex);
     updatedBox.insert(newIndex, item);
-    await Future.microtask(() async {
       await _questionBox.clear();
       await _questionBox.addAll(updatedBox);
       await _questionBox.flush();
       talker.debug('Persisted: ${_questionBox.values}');
-      return;
-    });
   }
 
   void _validateIndex(int index) {
