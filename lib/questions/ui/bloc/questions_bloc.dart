@@ -1,4 +1,3 @@
-// questions_bloc.dart
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:equatable/equatable.dart';
@@ -17,16 +16,9 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     on<QuestionUpdated>(_onUpdated);
     on<QuestionDeleted>(_onDeleted);
     on<QuestionsReordered>(_onReordered);
-
-    // _hiveSubscription = questionsRepository.watchQuestions().listen((questions) {
-    //   if (!listEquals(questions, state.questions)) {
-    //     add(QuestionsRequested());
-    //   }
-    // });
   }
 
   final QuestionsRepository questionsRepository;
-  // late final StreamSubscription<List<String>> _hiveSubscription;
 
   void _onInit(QuestionsInitialized event, Emitter<QuestionsState> emit) {
     if (state.status != QuestionsStatus.initial) return;
@@ -120,9 +112,6 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
       final oldIndex = event.oldIndex;
       int newIndex = event.newIndex;
       emit(state.copyWith(status: QuestionsStatus.updating));
-      talker.debug(
-        'Reordering questions in BLoC: ${event.oldIndex} -> ${event.newIndex}',
-      );
 
       final updatedQuestions = [...state.questions];
       if (event.oldIndex < event.newIndex) {
@@ -131,19 +120,6 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
       final String item = updatedQuestions.removeAt(oldIndex);
       updatedQuestions.insert(newIndex, item);
 
-      // if (event.newIndex < 0) {
-      //   updatedQuestions
-      //     ..insert(0, item)
-      //     ..removeAt(event.oldIndex + 1);
-      // } else if (event.newIndex >= updatedQuestions.length) {
-      //   updatedQuestions
-      //     ..add(item)
-      //     ..removeAt(event.oldIndex);
-      // } else {
-      //   updatedQuestions.insert(event.newIndex, item);
-      //   updatedQuestions.removeAt(event.oldIndex + 1);
-      // }
-      
       emit(
         state.copyWith(
           status: QuestionsStatus.success,
@@ -151,8 +127,7 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
         ),
       );
       await questionsRepository.reorderQuestions(
-        oldIndex: event.oldIndex,
-        newIndex: newIndex,
+        reorderedList: updatedQuestions,
       );
     } catch (error, stackTrace) {
       emit(
@@ -171,7 +146,6 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     StackTrace stackTrace,
   ) {
     emit(state.copyWith(status: QuestionsStatus.failure));
-    talker.critical('Fatal Error', error, stackTrace);
     addError(error, stackTrace);
   }
 }

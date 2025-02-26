@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:my_transcriber/chats/chats.dart' show talker;
 
 final _flutterTts = FlutterTts();
 
@@ -11,7 +10,6 @@ class TextToSpeechService {
 
   Future<void> initialize() async {
     try {
-      talker.critical('FlutterTTS initialize ');
       await _flutterTts.setLanguage('ru-RU');
       await _flutterTts.setSpeechRate(0.5);
 

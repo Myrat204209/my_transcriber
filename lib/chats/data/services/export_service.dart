@@ -23,7 +23,6 @@ class ExportService {
   }) async {
     if (!_isInit) {
       await init();
-      // throw Exception('Storage permission denied');
     }
 
     final dir = await _getPlatformDirectory();

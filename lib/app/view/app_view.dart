@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/questions/questions.dart';
 import 'package:my_transcriber/results/results.dart';
@@ -61,7 +59,6 @@ class _AppViewState extends State<AppView> {
                     setState(() {
                       selected = i;
                     });
-                    log('Selected: $i  $selected');
                   },
                   children: [
                     buildButton('Home', BootstrapIcons.questionCircle),

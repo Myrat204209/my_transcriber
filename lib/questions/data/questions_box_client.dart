@@ -1,5 +1,4 @@
-import 'package:hive_ce_flutter/hive_flutter.dart' show Box;
-import 'package:my_transcriber/questions/questions.dart';
+import 'package:hive_ce/hive.dart' show Box;
 
 class QuestionsBoxClient {
   final Box<String> _questionBox;
@@ -18,7 +17,8 @@ class QuestionsBoxClient {
 
   Future<void> editOne(int index, String newQuestion) async {
     _validateIndex(index);
-    await _questionBox.putAt(index, newQuestion);
+    if (_questionBox.getAt(index) == newQuestion.trim()) return;
+    await _questionBox.putAt(index, newQuestion.trim());
   }
 
   Future<void> deleteOne(int index) async {
@@ -26,19 +26,10 @@ class QuestionsBoxClient {
     await _questionBox.deleteAt(index);
   }
 
-  Future<void> reOrder({required int oldIndex, required int newIndex}) async {
-
-    final updatedBox = [..._questionBox.values];
-
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final String item = updatedBox.removeAt(oldIndex);
-    updatedBox.insert(newIndex, item);
-      await _questionBox.clear();
-      await _questionBox.addAll(updatedBox);
-      await _questionBox.flush();
-      talker.debug('Persisted: ${_questionBox.values}');
+  Future<void> reOrder({required List<String> reorderedList}) async {
+    await _questionBox.clear();
+    await _questionBox.addAll(reorderedList);
+    await _questionBox.flush();
   }
 
   void _validateIndex(int index) {

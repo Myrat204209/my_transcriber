@@ -33,7 +33,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     try {
 
       await chatRepository.initialize();
-      talker.critical('ChatRepository initialize ');
       emit(
         state.copyWith(
           status: ChatsStatus.started,
@@ -108,7 +107,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(
         state.copyWith(recognizedText: [...state.recognizedText, userAnswer]),
       );
-      // await chatRepository.makeInterruption();
       add(ChatsQuestioned());
     } catch (error, stackTrace) {
       await chatRepository.shutdown();
@@ -151,7 +149,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     StackTrace stackTrace,
   ) {
     emit(state.copyWith(status: ChatsStatus.failure));
-    talker.error('Error occurred', error, stackTrace);
     addError(error, stackTrace);
   }
 
@@ -161,7 +158,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     try {
       emit(state.copyWith(status: ChatsStatus.ending));
 
-      // add(ChatsFinished());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     }

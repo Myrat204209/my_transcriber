@@ -29,12 +29,8 @@ class ChatsResumed extends ChatsEvent {
 }
 
 class ChatsListened extends ChatsEvent {
-  // final String recognizedText;
-  // const ChatListened(this.recognizedText);
   const ChatsListened();
 
-  // @override
-  // List<Object?> get props => [recognizedText];
 }
 
 class ChatsEnded extends ChatsEvent {

@@ -41,30 +41,22 @@ class ShutdownFailure extends ChatFailure {
   const ShutdownFailure(super.error);
 }
 
-// chat_repository.dart (updated)
 class ChatRepository {
   ChatRepository({required ChatService chatService})
     : _chatService = chatService;
 
   final ChatService _chatService;
-  // bool _isInitialized = false;
 
   Future<void> initialize() async {
     try {
-      //   if (_isInitialized) return;
-      talker.critical('ChatService initialize ');
-
       await _chatService.initialize();
-      // _isInitialized = true;
     } catch (error, stackTrace) {
-      // _isInitialized = false;
       Error.throwWithStackTrace(InitializeFailure(error), stackTrace);
     }
   }
 
   Future<void> askQuestion(String text) async {
     try {
-      // if (!_isInitialized) throw StateError('Repository not initialized');
       await _chatService.speak(text);
     } catch (error, stackTrace) {
       await _chatService.stopSpeaker();
@@ -74,7 +66,6 @@ class ChatRepository {
 
   Future<String> listenAnswer() async {
     try {
-      // if (!_isInitialized) throw StateError('Repository not initialized');
       return await _chatService.listen();
     } catch (error, stackTrace) {
       await _chatService.stopListener();

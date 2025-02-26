@@ -9,23 +9,19 @@ import 'app_view.dart';
 
 class App extends StatelessWidget {
   const App({
-    // required StorageRepository storageRepository,
     required ChatRepository chatRepository,
     required QuestionsRepository questionsRepository,
     required ResultsRepository resultsRepository,
     super.key,
-  }) : //  _storageRepository = storageRepository,
-       _resultsRepository = resultsRepository,
+  }) : _resultsRepository = resultsRepository,
        _chatRepository = chatRepository,
        _questionsRepository = questionsRepository;
-  // final StorageRepository _storageRepository;
 
   final QuestionsRepository _questionsRepository;
   final ChatRepository _chatRepository;
   final ResultsRepository _resultsRepository;
   @override
   Widget build(BuildContext context) {
-    // final themeModeBloc = ThemeModeBloc();
     final questionsBloc = QuestionsBloc(
       questionsRepository: _questionsRepository,
     )..add(QuestionsInitialized());
@@ -36,7 +32,6 @@ class App extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider.value(value: _chatRepository),
-        // RepositoryProvider.value(value: _storageRepository),
         RepositoryProvider.value(value: _questionsRepository),
         RepositoryProvider.value(value: _resultsRepository),
       ],
@@ -45,8 +40,6 @@ class App extends StatelessWidget {
           BlocProvider.value(value: questionsBloc),
           BlocProvider.value(value: chatsBloc),
           BlocProvider.value(value: resultsBloc),
-
-          // BlocProvider.value(value: productCubit),
         ],
         child: const AppView(),
       ),

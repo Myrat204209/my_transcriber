@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:my_transcriber/chats/chats.dart'
     show ExportService, SpeechToTextService, TextToSpeechService;
-import 'package:my_transcriber/questions/questions.dart';
 
 class ChatService {
   final _flutterTts = TextToSpeechService();
@@ -12,12 +11,8 @@ class ChatService {
 
   Future<void> initialize() async {
     try {
-      talker.critical('FlutterTTS initialize ');
-
       await _flutterTts.initialize();
-      talker.critical('FlutterSTT initialize ');
       await _speechToText.initialize();
-      talker.critical('Flutter Exporter initialize ');
       await _exporter.init();
     } catch (e, stackTrace) {
       throw Error.throwWithStackTrace('Initialization failed: $e', stackTrace);

@@ -54,7 +54,6 @@ class QuestionsSortableMaterial extends HookWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: InkWell(
             onTap: () {
-              talker.warning('Tile tapped, index: $index');
               if (activeTileState.value.index != null &&
                   activeTileState.value.index != index) {
                 cleanupResources();
@@ -89,7 +88,6 @@ class QuestionsSortableMaterial extends HookWidget {
                                 context.read<QuestionsBloc>().add(
                                   QuestionUpdated(index, newText),
                                 );
-                                talker.warning('Text submitted: $newText');
                                 cleanupResources();
                               },
                             )
@@ -118,9 +116,7 @@ class QuestionsSortableMaterial extends HookWidget {
         );
       },
       onReorder: (oldIndex, newIndex) {
-        talker.warning(
-          'Reordering questions...oldIndex: $oldIndex, newIndex: $newIndex',
-        );
+        
         context.read<QuestionsBloc>().add(
           QuestionsReordered(oldIndex: oldIndex, newIndex: newIndex),
         );

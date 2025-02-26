@@ -68,9 +68,9 @@ class QuestionsRepository {
     }
   }
 
-  Future<void> reorderQuestions({required oldIndex, required newIndex}) async {
+  Future<void> reorderQuestions({required List<String> reorderedList}) async {
     try {
-      await _questionBoxClient.reOrder(oldIndex: oldIndex, newIndex: newIndex);
+      await _questionBoxClient.reOrder(reorderedList: reorderedList);
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(ReorderQuestionsFailure(error), stackTrace);
     }
