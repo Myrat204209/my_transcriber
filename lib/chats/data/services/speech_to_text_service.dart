@@ -1,4 +1,7 @@
-part of 'chats_service.dart';
+import 'dart:async' show Completer;
+
+import 'package:my_transcriber/chats/chats.dart' show talker;
+import 'package:speech_to_text/speech_to_text.dart';
 
 class SpeechToTextService {
   final _speechToText = SpeechToText();

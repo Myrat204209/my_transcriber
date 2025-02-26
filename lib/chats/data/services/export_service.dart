@@ -1,4 +1,9 @@
-part of 'chats_service.dart';
+import 'dart:io';
+
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:my_transcriber/permissions/permission_client.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ExportService {
   bool _isInit = false;
@@ -52,20 +57,6 @@ class ExportService {
       ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
   }
 
-  Stream<List<FileSystemEntity>> watchListOfChats() async* {
-    yield await listConversationFiles();
-
-    yield* listConversationFiles().asStream().asyncMap((event) async {
-      return await listConversationFiles();
-    });
-    // Watch for changes in the local storage
-    // yield* _reportsBox
-    //     .watch(key: employee.employeeCode)
-    //     .asyncMap((event) async {
-    //   return await getNumberOfOperations(employee);
-    // });
-  }
-
   Future<void> openFile(FileSystemEntity file) async {
     if (!await file.exists()) {
       throw Exception('File not found: ${file.path}');
@@ -112,14 +103,3 @@ String _getFormattedTimestamp() {
 Future<void> _checkStoragePermissions() async {
   await PermissionClient().askStorage();
 }
-
-    // Directory directory;
-    // if (Platform.isAndroid) {
-    //   directory = Directory('/storage/emulated/0/Download');
-    // } else if (Platform.isIOS) {
-    //   directory = await getApplicationDocumentsDirectory();
-    // } else {
-    //   throw UnsupportedError("Unsupported platform");
-    // }
-    // final file = File('${directory.path}/Conversation.txt');
-    // await file.writeAsString(textConversation);

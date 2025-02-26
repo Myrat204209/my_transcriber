@@ -1,4 +1,7 @@
-part of 'chats_service.dart';
+import 'dart:io';
+
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:my_transcriber/chats/chats.dart' show talker;
 
 final _flutterTts = FlutterTts();
 
@@ -11,7 +14,7 @@ class TextToSpeechService {
       talker.critical('FlutterTTS initialize ');
       await _flutterTts.setLanguage('ru-RU');
       await _flutterTts.setSpeechRate(0.5);
-      
+
       if (Platform.isIOS) {
         await _flutterTts.setSharedInstance(true);
       }
@@ -44,7 +47,7 @@ class TextToSpeechService {
   }
 
   Future<void> resumeSpeaker(String text) async {
-    await _flutterTts.speak(text);
+    await _flutterTts.speak(text, focus: true);
   }
 
   Future<void> stopSpeaking() async {

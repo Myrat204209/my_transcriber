@@ -1,21 +1,24 @@
 part of 'chats_bloc.dart';
 
 enum ChatsStatus {
-  initial,
-  started,
-  questioning,
-  pausing,
-  resuming,
-  listening,
-  ending,
-  finished,
-  failure,
+  initial(true),
+  started(false),
+  questioning(false),
+  pausing(true),
+  resuming(false),
+  listening(false),
+  ending(false),
+  finished(true),
+  failure(true);
+
+  final bool state;
+  const ChatsStatus(this.state);
 }
 
 final class ChatsState extends Equatable {
   final ChatsStatus status;
-  final List<String> questions; 
-  final int currentQuestionIndex; 
+  final List<String> questions;
+  final int currentQuestionIndex;
   final List<String> recognizedText;
 
   const ChatsState.initial()

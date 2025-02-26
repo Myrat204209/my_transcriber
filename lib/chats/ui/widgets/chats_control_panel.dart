@@ -1,6 +1,6 @@
 part of 'chats_content.dart';
 
-class ChatsControlPanel extends HookWidget {
+class ChatsControlPanel extends StatelessWidget {
   const ChatsControlPanel({super.key});
 
   @override
@@ -8,12 +8,6 @@ class ChatsControlPanel extends HookWidget {
     final chatStatus = context.select((ChatsBloc bloc) => bloc.state.status);
     final questionsList = context.select(
       (QuestionsBloc bloc) => bloc.state.questions,
-    );
-
-    final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 300),
-
-      debugLabel: 'iconAnimation',
     );
 
     return chatStatus == ChatsStatus.ending
@@ -31,7 +25,6 @@ class ChatsControlPanel extends HookWidget {
                 context
                   ..read<ChatsBloc>().add(ChatsInitialized())
                   ..read<ResultsBloc>().add(ResultsListed());
-                animationController.reset();
               },
               child: Text('Cancel', style: TextStyle(color: Colors.red)),
             ),
@@ -42,8 +35,9 @@ class ChatsControlPanel extends HookWidget {
                 ),
               ),
               onPressed: () {
-                context.read<ChatsBloc>().add(ChatsFinished());
-                animationController.reset();
+                context
+                  ..read<ChatsBloc>().add(ChatsFinished())
+                  ..read<ResultsBloc>().add(ResultsListed());
               },
               child: Text(
                 'Save the chat',
@@ -59,38 +53,24 @@ class ChatsControlPanel extends HookWidget {
           children: [
             IconButton(
               onPressed: () {
-                talker.debug(
-                  'AnimationController Status Before: ${animationController.status}',
+                talker.info(
+                  'Chat status: $chatStatus and state: ${chatStatus.state}',
                 );
-
-                animationController.isDismissed
-                    ? animationController.forward()
-                    : animationController.reverse();
-                (chatStatus == ChatsStatus.questioning)
+                (!chatStatus.state)
                     ? context.read<ChatsBloc>().add(ChatsPaused())
                     : (chatStatus == ChatsStatus.pausing)
                     ? context.read<ChatsBloc>().add(ChatsResumed())
                     : context.read<ChatsBloc>().add(
                       ChatsStarted(questionList: [...questionsList]),
                     );
-                talker.warning(
-                  'AnimationController Status After: ${animationController.status}',
-                );
               },
-              icon: AnimatedBuilder(
-                animation: animationController,
-                builder:
-                    (context, child) => AnimatedIcon(
-                      progress: animationController,
-                      color:
-                          Color.lerp(
-                            Colors.green,
-                            Colors.white,
-                            animationController.value,
-                          )!,
-                      icon: AnimatedIcons.play_pause,
-                      size: 60,
-                    ),
+              color: chatStatus.state ? Colors.green : Colors.white,
+
+              icon: Icon(
+                chatStatus.state
+                    ? Icons.play_circle_rounded
+                    : Icons.pause_rounded,
+                size: 60,
               ),
             ),
 
@@ -98,7 +78,7 @@ class ChatsControlPanel extends HookWidget {
               icon: Icon(
                 Icons.stop_circle_rounded,
                 color: Colors.red,
-                size: 40,
+                size: 50,
               ),
               autofocus: true,
               onPressed: () => context.read<ChatsBloc>().add(ChatsFinished()),

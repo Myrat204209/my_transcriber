@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:my_transcriber/results/results.dart';
 
 class ResultsPage extends StatelessWidget {
@@ -6,6 +6,9 @@ class ResultsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResultsView();
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: Text('Finished Conversations')),
+      body: ResultsView(),
+    );
   }
 }

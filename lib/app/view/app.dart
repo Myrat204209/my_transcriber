@@ -8,18 +8,16 @@ import 'package:my_transcriber/results/results.dart';
 import 'app_view.dart';
 
 class App extends StatelessWidget {
-  const App(
-      {
-      // required StorageRepository storageRepository,
-      required ChatRepository chatRepository,
-      required QuestionsRepository questionsRepository,
-      required ResultsRepository resultsRepository,
-      super.key})
-      :
-        //  _storageRepository = storageRepository,
-        _resultsRepository = resultsRepository,
-        _chatRepository = chatRepository,
-        _questionsRepository = questionsRepository;
+  const App({
+    // required StorageRepository storageRepository,
+    required ChatRepository chatRepository,
+    required QuestionsRepository questionsRepository,
+    required ResultsRepository resultsRepository,
+    super.key,
+  }) : //  _storageRepository = storageRepository,
+       _resultsRepository = resultsRepository,
+       _chatRepository = chatRepository,
+       _questionsRepository = questionsRepository;
   // final StorageRepository _storageRepository;
 
   final QuestionsRepository _questionsRepository;
@@ -28,15 +26,16 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final themeModeBloc = ThemeModeBloc();
-    final questionsBloc =
-        QuestionsBloc(questionsRepository: _questionsRepository)
-          ..add(QuestionsInitialized());
+    final questionsBloc = QuestionsBloc(
+      questionsRepository: _questionsRepository,
+    )..add(QuestionsInitialized());
     final chatsBloc = ChatsBloc(chatRepository: _chatRepository);
-    final resultsBloc = ResultsBloc(resultsRepository: _resultsRepository)..add(ResultsListed());
+    final resultsBloc = ResultsBloc(resultsRepository: _resultsRepository)
+      ..add(ResultsListed());
 
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider.value(value: _chatRepository,),
+        RepositoryProvider.value(value: _chatRepository),
         // RepositoryProvider.value(value: _storageRepository),
         RepositoryProvider.value(value: _questionsRepository),
         RepositoryProvider.value(value: _resultsRepository),
@@ -45,7 +44,7 @@ class App extends StatelessWidget {
         providers: [
           BlocProvider.value(value: questionsBloc),
           BlocProvider.value(value: chatsBloc),
-          BlocProvider.value(value: resultsBloc)
+          BlocProvider.value(value: resultsBloc),
 
           // BlocProvider.value(value: productCubit),
         ],
