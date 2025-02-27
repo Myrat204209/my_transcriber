@@ -19,7 +19,7 @@ class ChatsContent extends StatelessWidget {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
         return ListView.builder(
-          itemCount: state.currentQuestionIndex + state.recognizedText.length,
+          itemCount: state.questions.length,
 
           itemBuilder: (context, index) {
             if (index % 2 != 0) {

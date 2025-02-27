@@ -44,7 +44,7 @@ class _AppViewState extends State<AppView> {
             theme: ThemeData(
               colorScheme: ColorSchemes.darkGreen(),
               radius: 0.5,
-            ),
+            ), 
             home: Scaffold(
               backgroundColor: Colors.cyan,
               footers: [

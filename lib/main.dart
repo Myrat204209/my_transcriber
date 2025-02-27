@@ -31,7 +31,6 @@ void main() {
     final exportService = ExportService();
     final resultsRepository = ResultsRepository(exportService: exportService);
     return App(
-      
       resultsRepository: resultsRepository,
       chatRepository: chatRepository,
       questionsRepository: questionsRepository,
