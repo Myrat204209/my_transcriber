@@ -61,9 +61,9 @@ class _AppViewState extends State<AppView> {
                     });
                   },
                   children: [
-                    buildButton('Home', BootstrapIcons.questionCircle),
-                    buildButton('Microphone', BootstrapIcons.mic),
-                    buildButton('Results', BootstrapIcons.chatDots),
+                    buildButton('Вопрос', BootstrapIcons.questionCircle),
+                    buildButton('Микрофон', BootstrapIcons.mic),
+                    buildButton('Резултаты', BootstrapIcons.chat),
                   ],
                 ),
               ],

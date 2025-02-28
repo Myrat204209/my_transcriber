@@ -21,14 +21,12 @@ final class ChatsState extends Equatable {
   final List<String> pendingQuestions;
   final String currentQuestion;
   final List<String> chatContent;
-  final List<String> recognizedText;
 
   const ChatsState.initial()
     : this(
         status: ChatsStatus.initial,
         pendingQuestions: const [],
         chatContent: const [],
-        recognizedText: const [],
         currentQuestion: '',
       );
 
@@ -37,7 +35,6 @@ final class ChatsState extends Equatable {
     this.chatContent = const [],
     this.pendingQuestions = const [],
     this.currentQuestion = '',
-    this.recognizedText = const [],
   });
 
   ChatsState copyWith({
@@ -45,14 +42,12 @@ final class ChatsState extends Equatable {
     List<String>? pendingQuestions,
     String? currentQuestion,
     List<String>? chatContent,
-    List<String>? recognizedText,
   }) {
     return ChatsState(
       status: status ?? this.status,
       pendingQuestions: pendingQuestions ?? this.pendingQuestions,
       chatContent: chatContent ?? this.chatContent,
       currentQuestion: currentQuestion ?? this.currentQuestion,
-      recognizedText: recognizedText ?? this.recognizedText,
     );
   }
 
@@ -62,6 +57,5 @@ final class ChatsState extends Equatable {
     chatContent,
     pendingQuestions,
     currentQuestion,
-    recognizedText,
   ];
 }

@@ -16,13 +16,13 @@ class QuestionsAddButton extends StatelessWidget {
           builder: (context) {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
-              title: const Text('Add Question'),
+              title: const Text('Добавить вопрос'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Add question you want to ask. Click save when you\'re done',
+                    'Напишите вопрос. После нажмите "Добавить вопрос".',
                   ),
                   const Gap(16),
                   ConstrainedBox(
@@ -38,7 +38,7 @@ class QuestionsAddButton extends StatelessWidget {
               ),
               actions: [
                 PrimaryButton(
-                  child: const Text('Add Question'),
+                  child: const Text('Добавить вопрос'),
                   onPressed: () {
                     final question = controller.text;
                     if (question.isNotEmpty) {

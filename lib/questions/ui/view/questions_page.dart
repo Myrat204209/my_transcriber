@@ -10,7 +10,7 @@ class QuestionsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: const Text('Questions').bold().xLarge(),
+        title: const Text('Вопросы').bold().xLarge(),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),

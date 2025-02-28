@@ -7,7 +7,7 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Finished Conversations')),
+      appBar: AppBar(centerTitle: true, title: Text('Сохраненные чаты')),
       body: ResultsView(),
     );
   }

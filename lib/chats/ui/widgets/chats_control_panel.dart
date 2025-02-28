@@ -26,7 +26,7 @@ class ChatsControlPanel extends StatelessWidget {
                   ..read<ChatsBloc>().add(ChatsInitialized())
                   ..read<ResultsBloc>().add(ResultsListed());
               },
-              child: Text('Cancel', style: TextStyle(color: Colors.red)),
+              child: Text('Отмена', style: TextStyle(color: Colors.red)),
             ),
             OutlinedButton(
               style: ButtonStyle(
@@ -40,7 +40,7 @@ class ChatsControlPanel extends StatelessWidget {
                   ..read<ResultsBloc>().add(ResultsListed());
               },
               child: Text(
-                'Save the chat',
+                'Сохранить',
                 style: TextStyle(color: Colors.green),
               ),
             ),

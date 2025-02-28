@@ -6,10 +6,7 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Speech to Text using BLoC'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Транскрибатор'), centerTitle: true),
       body: ChatsContent(),
       bottomNavigationBar: ChatsControlPanel(),
     );

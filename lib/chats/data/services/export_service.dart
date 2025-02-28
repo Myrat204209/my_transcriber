@@ -38,8 +38,6 @@ class ExportService {
     final buffer = StringBuffer();
     for (int i = 0; i < chat.length; i++) {
       buffer.writeln('${(i%2==0)? 'Q':'A'}: ${chat[i]}\n');
-      // buffer.writeln('Q${i + 1}: ${q[i]}');
-      // buffer.writeln('A${i + 1}: ${a[i]}\n');
     }
     return buffer.toString();
   }
