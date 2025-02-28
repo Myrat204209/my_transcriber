@@ -34,15 +34,13 @@ class ChatsControlPanel extends StatelessWidget {
                   (states) => Colors.white,
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
+                await Future.delayed(const Duration(milliseconds: 500));
                 context
                   ..read<ChatsBloc>().add(ChatsFinished())
                   ..read<ResultsBloc>().add(ResultsListed());
               },
-              child: Text(
-                'Сохранить',
-                style: TextStyle(color: Colors.green),
-              ),
+              child: Text('Сохранить', style: TextStyle(color: Colors.green)),
             ),
           ],
         )
@@ -53,7 +51,6 @@ class ChatsControlPanel extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () {
-
                 (!chatStatus.state)
                     ? context.read<ChatsBloc>().add(ChatsPaused())
                     : (chatStatus == ChatsStatus.pausing)
@@ -79,11 +76,12 @@ class ChatsControlPanel extends StatelessWidget {
                 size: 50,
               ),
               autofocus: true,
-              onPressed:
-                  () =>
-                      context
-                        ..read<ChatsBloc>().add(ChatsFinished())
-                        ..read<ResultsBloc>().add(ResultsListed()),
+              onPressed: () async {
+                await Future.delayed(const Duration(milliseconds: 500));
+                context
+                  ..read<ChatsBloc>().add(ChatsFinished())
+                  ..read<ResultsBloc>().add(ResultsListed());
+              },
             ),
           ],
         );

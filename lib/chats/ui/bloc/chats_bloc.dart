@@ -73,7 +73,9 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     } finally {
-      // add(ChatsListened());
+      if (state.status == ChatsStatus.questioning) {
+        add(ChatsListened());
+      }
     }
   }
 
