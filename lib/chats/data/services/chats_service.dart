@@ -45,9 +45,8 @@ class ChatService {
   }
 
   Future<void> exportChat({
-    required List<String> questions,
-    required List<String> answers,
+    required List<String> chat,
   }) async {
-    await _exporter.exportToStorage(questions: questions, answers: answers);
+    await _exporter.exportToStorage(chatContent: chat);
   }
 }

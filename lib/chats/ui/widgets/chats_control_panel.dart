@@ -53,9 +53,7 @@ class ChatsControlPanel extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () {
-                talker.info(
-                  'Chat status: $chatStatus and state: ${chatStatus.state}',
-                );
+
                 (!chatStatus.state)
                     ? context.read<ChatsBloc>().add(ChatsPaused())
                     : (chatStatus == ChatsStatus.pausing)
@@ -81,7 +79,11 @@ class ChatsControlPanel extends StatelessWidget {
                 size: 50,
               ),
               autofocus: true,
-              onPressed: () => context.read<ChatsBloc>().add(ChatsFinished()),
+              onPressed:
+                  () =>
+                      context
+                        ..read<ChatsBloc>().add(ChatsFinished())
+                        ..read<ResultsBloc>().add(ResultsListed()),
             ),
           ],
         );

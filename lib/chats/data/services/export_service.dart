@@ -18,8 +18,7 @@ class ExportService {
   }
 
   Future<File> exportToStorage({
-    required List<String> questions,
-    required List<String> answers,
+    required List<String> chatContent
   }) async {
     if (!_isInit) {
       await init();
@@ -30,16 +29,17 @@ class ExportService {
       await dir.create(recursive: true);
     }
 
-    final content = _generateConversationText(questions, answers);
+    final content = _generateConversationText(chatContent);
     final file = File('${dir.path}/Chat_${_getFormattedTimestamp()}.txt');
     return file.writeAsString(content);
   }
 
-  String _generateConversationText(List<String> q, List<String> a) {
+  String _generateConversationText(List<String> chat) {
     final buffer = StringBuffer();
-    for (var i = 0; i < q.length; i++) {
-      buffer.writeln('Q${i + 1}: ${q[i]}');
-      buffer.writeln('A${i + 1}: ${a[i]}\n');
+    for (int i = 0; i < chat.length; i++) {
+      buffer.writeln('${(i%2==0)? 'Q':'A'}: ${chat[i]}\n');
+      // buffer.writeln('Q${i + 1}: ${q[i]}');
+      // buffer.writeln('A${i + 1}: ${a[i]}\n');
     }
     return buffer.toString();
   }

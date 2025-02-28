@@ -78,6 +78,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   }
 
   FutureOr<void> _onPaused(ChatsPaused event, Emitter<ChatsState> emit) async {
+    if (state.status == ChatsStatus.listening) return;
     try {
       emit(state.copyWith(status: ChatsStatus.pausing));
       await chatRepository.pauseChat();
@@ -132,10 +133,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     Emitter<ChatsState> emit,
   ) async {
     try {
-      await chatRepository.exportConversation(
-        answeredPhrases: state.recognizedText,
-        askedQuestions: chatRepository.questionsList,
-      );
+      await chatRepository.exportConversation(chat: state.chatContent);
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));
       add(ChatsInitialized());

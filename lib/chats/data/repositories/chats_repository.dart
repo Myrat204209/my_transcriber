@@ -92,15 +92,9 @@ class ChatRepository {
     }
   }
 
-  Future<void> exportConversation({
-    required List<String> askedQuestions,
-    required List<String> answeredPhrases,
-  }) async {
+  Future<void> exportConversation({required List<String> chat}) async {
     try {
-      await _chatService.exportChat(
-        answers: answeredPhrases,
-        questions: askedQuestions,
-      );
+      await _chatService.exportChat(chat: chat);
     } catch (e, st) {
       Error.throwWithStackTrace(ExportConversationFailure(e), st);
     }
