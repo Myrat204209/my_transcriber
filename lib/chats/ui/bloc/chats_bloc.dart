@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_transcriber/chats/chats.dart';
 
@@ -20,7 +21,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsEnded>(_onEnded);
     on<ChatsFinished>(_onFinished);
   }
-  
 
   void _onInit(ChatsInitialized event, Emitter<ChatsState> emit) {
     // if (state.status != ChatsStatus.finished) {
@@ -31,13 +31,11 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   Future<void> _onStarted(ChatsStarted event, Emitter<ChatsState> emit) async {
     try {
-
       await chatRepository.initialize();
       emit(
         state.copyWith(
           status: ChatsStatus.started,
-          questions: event.questionList,
-          currentQuestionIndex: 0,
+          pendingQuestions: event.questionList,
         ),
       );
       add(ChatsQuestioned());
@@ -50,27 +48,32 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     ChatsQuestioned event,
     Emitter<ChatsState> emit,
   ) async {
+    if (state.status == ChatsStatus.pausing ||
+        state.status == ChatsStatus.resuming) {
+      return;
+    }
     try {
-      emit(state.copyWith(status: ChatsStatus.questioning));
-      if (state.questions.length <= state.currentQuestionIndex) {
+      if (state.pendingQuestions.isEmpty) {
         add(ChatsEnded());
         return;
       }
-
+      final nextQuestion = state.pendingQuestions.first;
+      emit(
+        state.copyWith(
+          currentQuestion: nextQuestion,
+          chatContent: [...state.chatContent, nextQuestion],
+          pendingQuestions: state.pendingQuestions.sublist(1),
+          status: ChatsStatus.questioning,
+        ),
+      );
       await _executeWithSafety(
-        action:
-            () => chatRepository.askQuestion(
-              state.questions[state.currentQuestionIndex],
-            ),
+        action: () => chatRepository.askQuestion(nextQuestion),
         cleanup: () => chatRepository.shutdown(),
       );
-
-      emit(
-        state.copyWith(currentQuestionIndex: state.currentQuestionIndex + 1),
-      );
-      add(ChatsListened());
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
+    } finally {
+      // add(ChatsListened());
     }
   }
 
@@ -82,18 +85,24 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       _handleError(emit, e, st);
     }
   }
+
   FutureOr<void> _onResumed(
     ChatsResumed event,
     Emitter<ChatsState> emit,
   ) async {
     try {
       emit(state.copyWith(status: ChatsStatus.resuming));
-      await chatRepository.resumeChat(
-        text: state.questions[state.currentQuestionIndex],
-      );
-      add(ChatsQuestioned());
+      await chatRepository.resumeChat(text: state.currentQuestion);
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
+    } finally {
+      // emit(
+      //   state.copyWith(
+      //     currentQuestion: state.pendingQuestions.first,
+      //     pendingQuestions: state.pendingQuestions.sublist(1),
+      //   ),
+      // );
+      add(ChatsListened());
     }
   }
 
@@ -101,11 +110,15 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     ChatsListened event,
     Emitter<ChatsState> emit,
   ) async {
+    if (state.status == ChatsStatus.pausing) return;
     try {
       emit(state.copyWith(status: ChatsStatus.listening));
       final userAnswer = await chatRepository.listenAnswer();
       emit(
-        state.copyWith(recognizedText: [...state.recognizedText, userAnswer]),
+        state.copyWith(
+          recognizedText: [...state.recognizedText, userAnswer],
+          chatContent: [...state.chatContent, userAnswer],
+        ),
       );
       add(ChatsQuestioned());
     } catch (error, stackTrace) {
@@ -121,7 +134,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     try {
       await chatRepository.exportConversation(
         answeredPhrases: state.recognizedText,
-        askedQuestions: state.questions,
+        askedQuestions: chatRepository.questionsList,
       );
       await chatRepository.shutdown();
       emit(state.copyWith(status: ChatsStatus.finished));
@@ -152,12 +165,9 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     addError(error, stackTrace);
   }
 
-  
-
   void _onEnded(ChatsEnded event, Emitter<ChatsState> emit) {
     try {
       emit(state.copyWith(status: ChatsStatus.ending));
-
     } catch (error, stackTrace) {
       _handleError(emit, error, stackTrace);
     }

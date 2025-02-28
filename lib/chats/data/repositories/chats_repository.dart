@@ -42,11 +42,14 @@ class ShutdownFailure extends ChatFailure {
 }
 
 class ChatRepository {
-  ChatRepository({required ChatService chatService})
-    : _chatService = chatService;
+  ChatRepository({
+    required ChatService chatService,
+    required List<String> questions,
+  }) : _chatService = chatService,
+       questionsList = questions;
 
   final ChatService _chatService;
-
+  final List<String> questionsList;
   Future<void> initialize() async {
     try {
       await _chatService.initialize();

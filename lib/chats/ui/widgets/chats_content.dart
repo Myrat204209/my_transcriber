@@ -18,12 +18,13 @@ class ChatsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
+        final wholeChat = state.chatContent;
         return ListView.builder(
-          itemCount: state.questions.length,
+          itemCount: wholeChat.length,
 
           itemBuilder: (context, index) {
             if (index % 2 != 0) {
-              return ChatsUserSpeech(text: state.recognizedText[index ~/ 2]);
+              return ChatsUserSpeech(text: wholeChat[index]);
             } else {
               return Padding(
                 padding: const EdgeInsets.only(right: 20),
@@ -32,7 +33,7 @@ class ChatsContent extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                   backgroundColor: Colors.white,
                   child: Text(
-                    state.questions[index ~/ 2],
+                    wholeChat[index],
                     softWrap: true,
 
                     style: TextStyle(color: Colors.black, fontSize: 18),

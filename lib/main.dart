@@ -11,9 +11,8 @@ import 'package:my_transcriber/results/results.dart';
 void main() {
   bootstrap(() async {
     final permissionClient = PermissionClient();
-    
+
     await permissionClient.init();
-    
 
     await Hive.initFlutter();
     if (Hive.isBoxOpen('__user_questions__')) {
@@ -22,12 +21,17 @@ void main() {
 
     final userQuestionBox = await Hive.openBox<String>('__user_questions__');
     final questionsBoxClient = QuestionsBoxClient(questionBox: userQuestionBox);
+
     final questionsRepository = QuestionsRepository(
       questionBoxClient: questionsBoxClient,
     );
+    final questionsList = questionsBoxClient.fetchAll();
     final chatService = ChatService();
-    final chatRepository = ChatRepository(chatService: chatService);
-    
+    final chatRepository = ChatRepository(
+      chatService: chatService,
+      questions: questionsList,
+    );
+
     final exportService = ExportService();
     final resultsRepository = ResultsRepository(exportService: exportService);
     return App(

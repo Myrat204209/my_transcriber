@@ -15,37 +15,43 @@ enum ChatsStatus {
   const ChatsStatus(this.state);
 }
 
+@immutable
 final class ChatsState extends Equatable {
   final ChatsStatus status;
-  final List<String> questions;
-  final int currentQuestionIndex;
+  final List<String> pendingQuestions;
+  final String currentQuestion;
+  final List<String> chatContent;
   final List<String> recognizedText;
 
   const ChatsState.initial()
     : this(
         status: ChatsStatus.initial,
-        questions: const [],
+        pendingQuestions: const [],
+        chatContent: const [],
         recognizedText: const [],
-        currentQuestionIndex: 0,
+        currentQuestion: '',
       );
 
   const ChatsState({
     required this.status,
-    this.questions = const [],
-    this.currentQuestionIndex = 0,
+    this.chatContent = const [],
+    this.pendingQuestions = const [],
+    this.currentQuestion = '',
     this.recognizedText = const [],
   });
 
   ChatsState copyWith({
     ChatsStatus? status,
-    List<String>? questions,
-    int? currentQuestionIndex,
+    List<String>? pendingQuestions,
+    String? currentQuestion,
+    List<String>? chatContent,
     List<String>? recognizedText,
   }) {
     return ChatsState(
       status: status ?? this.status,
-      questions: questions ?? this.questions,
-      currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+      pendingQuestions: pendingQuestions ?? this.pendingQuestions,
+      chatContent: chatContent ?? this.chatContent,
+      currentQuestion: currentQuestion ?? this.currentQuestion,
       recognizedText: recognizedText ?? this.recognizedText,
     );
   }
@@ -53,8 +59,9 @@ final class ChatsState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    questions,
-    currentQuestionIndex,
+    chatContent,
+    pendingQuestions,
+    currentQuestion,
     recognizedText,
   ];
 }
