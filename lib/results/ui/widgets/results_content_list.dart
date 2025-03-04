@@ -32,10 +32,38 @@ class ResultsContentList extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               trailing: IconButton(
-                onPressed:
-                    () => context.read<ResultsBloc>().add(
-                      ResultsDeleteRequested(file: chat),
-                    ),
+                onPressed: () async {
+                  showAdaptiveDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog.adaptive(
+                          content: Text(
+                            'Вы уверены что хотите удалить?',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          actionsAlignment: MainAxisAlignment.center,
+                          actions: [
+                            OutlinedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Отмена'),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {
+                                context.read<ResultsBloc>().add(
+                                  ResultsDeleteRequested(file: chat),
+                                );
+                                Navigator.pop(context);
+                              },
+                              child: Text('Удалить'),
+                            ),
+                          ],
+                        ),
+                  );
+                },
                 icon: Icon(Icons.delete),
               ),
               onTap:

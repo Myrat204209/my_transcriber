@@ -21,10 +21,6 @@ class SpeakFailure extends ChatFailure {
   const SpeakFailure(super.error);
 }
 
-class ListenFailure extends ChatFailure {
-  const ListenFailure(super.error);
-}
-
 class PauseFailure extends ChatFailure {
   const PauseFailure(super.error);
 }
@@ -67,12 +63,11 @@ class ChatRepository {
     }
   }
 
-  Future<String> listenAnswer() async {
+  Future<String?> listenAnswer() async {
     try {
       return await _chatService.listen();
-    } catch (error, stackTrace) {
-      await _chatService.stopListener();
-      Error.throwWithStackTrace(ListenFailure(error), stackTrace);
+    } catch (error) {
+      return ' ';
     }
   }
 

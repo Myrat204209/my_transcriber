@@ -8,30 +8,33 @@ class SpeechToTextService {
 
   Future<void> initialize() async {
     await _speechToText.initialize(
-      finalTimeout: Duration(seconds: 40),
+      finalTimeout: Duration(seconds: 10),
       debugLogging: true,
-      onStatus: (status) => talker.info('Speech status: $status'),
-      onError: (error) => talker.error('Speech engine error:', error.errorMsg),
+
+      onError: (error) {
+        talker.error('Speech engine error:', error.errorMsg);
+      },
     );
   }
 
-  Future<String> listenSpeech({
+  Future<String?> listenSpeech({
     Duration listenDuration = const Duration(minutes: 10),
+    Duration pauseDuration = const Duration(seconds: 45),
   }) async {
-
     final completer = Completer<String>();
     try {
       _speechToText.listen(
         listenFor: listenDuration,
-        pauseFor: Duration(seconds: 45),
+        pauseFor: pauseDuration,
         onResult: (result) {
+          talker.critical('Listening Completed: ${result.recognizedWords}');
           if (result.finalResult) {
             completer.complete(result.recognizedWords);
           }
         },
         listenOptions: SpeechListenOptions(
           autoPunctuation: true,
-          listenMode: ListenMode.dictation,
+          listenMode: ListenMode.deviceDefault,
           cancelOnError: false,
           partialResults: true,
           enableHapticFeedback: true,
@@ -40,7 +43,7 @@ class SpeechToTextService {
         localeId: 'ru_RU',
       );
 
-      return await completer.future.timeout(listenDuration);
+      return await completer.future.timeout(Duration(seconds: 5));
     } finally {
       await stopListening();
     }

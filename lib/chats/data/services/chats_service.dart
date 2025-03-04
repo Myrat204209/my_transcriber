@@ -31,7 +31,7 @@ class ChatService {
     await _flutterTts.speakText(text);
   }
 
-  Future<String> listen() async {
+  Future<String?> listen() async {
     return await _speechToText.listenSpeech();
   }
 
@@ -44,9 +44,7 @@ class ChatService {
     await _speechToText.stopListening();
   }
 
-  Future<void> exportChat({
-    required List<String> chat,
-  }) async {
+  Future<void> exportChat({required List<String> chat}) async {
     await _exporter.exportToStorage(chatContent: chat);
   }
 }

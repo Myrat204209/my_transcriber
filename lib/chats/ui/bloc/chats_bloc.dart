@@ -117,7 +117,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     try {
       emit(state.copyWith(status: ChatsStatus.listening));
       final userAnswer = await chatRepository.listenAnswer();
-      emit(state.copyWith(chatContent: [...state.chatContent, userAnswer]));
+      emit(state.copyWith(chatContent: [...state.chatContent, userAnswer??'']));
       add(ChatsQuestioned());
     } catch (error, stackTrace) {
       await chatRepository.shutdown();

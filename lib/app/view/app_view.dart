@@ -38,9 +38,8 @@ class _AppViewState extends State<AppView> {
                 mat.BottomNavigationBar(
                   selectedItemColor: Colors.green,
                   unselectedItemColor: mat.Colors.blueGrey,
-
-                  currentIndex: selected,
                   type: mat.BottomNavigationBarType.shifting,
+                  currentIndex: selected,
                   onTap: (value) {
                     setState(() {
                       selected = value;
