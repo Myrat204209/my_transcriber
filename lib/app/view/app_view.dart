@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' as mat;
 import 'package:my_transcriber/chats/chats.dart';
 import 'package:my_transcriber/questions/questions.dart';
 import 'package:my_transcriber/results/results.dart';
@@ -13,25 +14,11 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   int selected = 0;
 
-  NavigationBarAlignment alignment = NavigationBarAlignment.spaceAround;
-  bool expands = true;
-  NavigationLabelType labelType = NavigationLabelType.none;
   bool customButtonStyle = true;
   bool expanded = true;
 
-  NavigationItem buildButton(String label, IconData icon) {
-    return NavigationItem(
-      style:
-          customButtonStyle
-              ? const ButtonStyle.muted(density: ButtonDensity.icon)
-              : null,
-      selectedStyle:
-          customButtonStyle
-              ? const ButtonStyle.fixed(density: ButtonDensity.icon)
-              : null,
-      label: Text(label),
-      child: Icon(icon),
-    );
+  BottomNavigationBarItem buildButton(String label, IconData icon) {
+    return BottomNavigationBarItem(icon: Icon(icon), label: label);
   }
 
   @override
@@ -44,23 +31,23 @@ class _AppViewState extends State<AppView> {
             theme: ThemeData(
               colorScheme: ColorSchemes.darkGreen(),
               radius: 0.5,
-            ), 
+            ),
+            // ThemeData.dark(useMaterial3: true),
             home: Scaffold(
-              backgroundColor: Colors.cyan,
               footers: [
-                const Divider(),
-                NavigationBar(
-                  alignment: alignment,
-                  labelType: labelType,
-                  expanded: expanded,
-                  expands: expands,
-                  index: selected,
-                  onSelected: (i) {
+                mat.BottomNavigationBar(
+                  selectedItemColor: Colors.green,
+                  unselectedItemColor: mat.Colors.blueGrey,
+
+                  currentIndex: selected,
+                  type: mat.BottomNavigationBarType.shifting,
+                  onTap: (value) {
                     setState(() {
-                      selected = i;
+                      selected = value;
                     });
                   },
-                  children: [
+
+                  items: [
                     buildButton('Вопрос', BootstrapIcons.questionCircle),
                     buildButton('Микрофон', BootstrapIcons.mic),
                     buildButton('Резултаты', BootstrapIcons.chat),
@@ -69,7 +56,7 @@ class _AppViewState extends State<AppView> {
               ],
               child: IndexedStack(
                 index: selected,
-                children: const [QuestionsPage(), ChatPage(), ResultsPage()],
+                children: [QuestionsPage(), ChatPage(), ResultsPage()],
               ),
             ),
           );
